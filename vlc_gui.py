@@ -1,30 +1,3 @@
-#! /usr/bin/python
-# -*- coding: utf-8 -*-
-
-#
-# WX example for VLC Python bindings
-# Copyright (C) 2009-2010 the VideoLAN team
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
-#
-"""
-A simple example for VLC python bindings using wxPython.
-
-Author: Michele Orrù
-Date: 23-11-2010
-"""
 from server_con import *
 
 # import external libraries
@@ -35,14 +8,12 @@ import vlc
 import os
 import sys
 import threading
+import json
 
 try:
     unicode        # Python 2
 except NameError:
     unicode = str  # Python 3
-
-
-
 
 
 class Player(wx.Frame):
@@ -124,12 +95,33 @@ class Player(wx.Frame):
         self.thread.start()
 
     def serverConn(self):
-        # serv = Server()
+        serv = Server()
 
-        # while True:
-        #     data = serv.recv()
-        #     print(data)
+        while True:
+            data = serv.recv().decode()
+            data = json.loads(data)
 
+            print(data)
+
+            if self.existSublist(['PAUSE'] , data['recognized']):
+                self.commandHandler('pause')
+            elif self.existSublist(['EXIT'], data['recognized']):
+                self.commandHandler('exit')
+            elif self.existSublist(['FULLSCREEN'], data['recognized']):
+                self.commandHandler('full')
+                
+
+    def existSublist(self, sublist, origina_list):
+        count = 0
+
+        for s in sublist:
+            if s in origina_list:
+                count+=1
+        
+        return count==len(sublist)
+
+
+    def commandHandler(self,text=''):
         switch ={
             'stop'  : self.stopVLC,
             'pause' : self.pauseVLC,
@@ -138,17 +130,15 @@ class Player(wx.Frame):
             'full'  : self.fullscreenVLC,
             'mute'  : self.muteVLC
         }
+        # text = input("Text: ")
 
-        while True:
-            text = input("Text: ")
-
-            if text == 'set':
-                time={}
-                time['seconds']= "30"
-                time['minutes']= "1"
-                switch[text](time)
-            elif text in list(switch.keys()):
-                switch[text]()
+        if text == 'set':
+            time={}
+            time['seconds']= "30"
+            time['minutes']= "1"
+            switch[text](time)
+        elif text in list(switch.keys()):
+            switch[text]()
 
     def fullscreenVLC(self):
         self.ShowFullScreen(self.fullscreen)
