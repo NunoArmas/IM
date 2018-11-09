@@ -5,21 +5,12 @@
   <rule id="rootRule" scope="public">
 	  <one-of>
 
-      <!--<item>
-        <ruleref uri="#object"/>
-        <tag>out.shape=rules.latest();</tag>
-      </item>
-      
       <item>
-        <ruleref uri="#color"/>
-        <tag>out.color=rules.latest();</tag>
-      </item>-->
-    
-      <item>
+        Lena
         <ruleref uri="#action"/>
-        <tag>out.action=rules.latest();</tag>
+        <tag>out.action=rules.action;</tag>
       </item>
-      
+
 	  </one-of>
 	</rule>
 
@@ -27,46 +18,149 @@
 
   <rule id="action">
     <one-of>
+
       <item>
-        pausa<tag>out="PAUSE"</tag>
+       <ruleref uri="#volume"/>
       </item>
+
       <item>
-        pára<tag>out="STOP"</tag>
+       <ruleref uri="#pause"/>
       </item>
+
       <item>
-        <ruleref uri="#exit"></ruleref>
+       <ruleref uri="#stop"/>
       </item>
+
       <item>
-        maior<tag>out="FULLSCREEN"</tag>
+        <ruleref uri="#exit"/>
+      </item>
+
+      <item>
+        <ruleref uri="#fullscreen"/>
+      </item>
+
+    </one-of>
+  </rule>
+
+  <rule id="volume">
+    <one-of>
+
+      <item>
+        <one-of>
+          <item>silêncio</item>
+          <item>cala-te</item>
+          <item>xx</item>
+        </one-of>
+        <tag>out="VOLUME_MUTE"</tag> 
+      </item>
+
+      <item>
+        <one-of>
+          <item>sobe</item>
+          <item>levanta</item>
+        </one-of>
+        o som 
+        <tag>out="VOLUME_UP"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>baixa</item>
+          <item>desce</item>
+          <item>diminui</item>
+        </one-of>
+        o som 
+        <tag>out="VOLUME_DOWN"</tag>
+      </item>
+
+      <item>
+        mete mais
+          <one-of>
+            <item>
+              alto  <tag>out="VOLUME_UP"</tag>
+            </item>
+            <item>
+              baixo  <tag>out="VOLUME_DOWN"</tag>
+            </item>
+          </one-of>
+      </item>
+
+    </one-of>
+  </rule>
+
+  <rule id="pause">
+    <one-of>
+      <item>
+        <item repeat="0-1">
+          mete 
+            <item repeat="0-1">em</item>
+        </item>
+        pausa
       </item>
     </one-of>
+
+    <tag>out="PAUSE"</tag>
+  </rule>
+
+  <rule id="stop">
+    <item>
+      pára
+      <item repeat="0-1">
+        <one-of>
+          <item>vídeo</item>
+          <item>episódio</item>
+        </one-of>
+      </item>
+    </item>
+    <tag>out="STOP"</tag>
   </rule>
 
   <rule id="exit">
     <one-of>
       <item>sai</item>
       <item>morre</item>
-     </one-of>
+      <item>adeus</item>
+      <item>desliga</item>
+      <item>
+        tenho de
+          <one-of>
+            <item>
+              <item repeat="0-1">me</item>
+              ir embora 
+            </item>
+            <item>bazar</item>
+          </one-of>
+      </item>
+    </one-of>
     <tag>out="EXIT"</tag>
+  </rule> 
+
+  <rule id="fullscreen">
+    
+    <item>mete</item>
+
+    <one-of>
+      <item>
+        a janela
+        <item repeat="0-1">mais</item>
+
+        <one-of>
+          <item>
+            grande <tag>out="FULLSCREEN_MAX"</tag>
+          </item>
+          <item>
+            pequena <tag>out="FULLSCREEN_MIN"</tag>
+          </item>
+        </one-of>
+      </item>
+
+      <item>
+        grande <tag>out="FULLSCREEN_MAX"</tag>
+      </item>
+      <item>
+        pequena <tag>out="FULLSCREEN_MIN"</tag>
+      </item>
+    </one-of>
   </rule>
 
-
-    <!--<rule id="object">
-	  <one-of>
-		  <item>quadrado<tag>out="SQUARE"</tag></item>
-		  <item>círculo<tag>out="CIRCLE"</tag></item>
-		  <item>triângulo<tag>out="TRIANGLE"</tag></item>
-	  </one-of>
-	</rule>
-  
-  
-	<rule id="color">
-	  <one-of>
-		  <item>verde<tag>out="GREEN"</tag></item>
-		  <item>azul<tag>out="BLUE"</tag></item>
-		  <item>vermelho<tag>out="RED"</tag></item>
-      <item>amarelo<tag>out="YELLOW"</tag></item>
-	  </one-of>
-	</rule>-->
-  
 </grammar>

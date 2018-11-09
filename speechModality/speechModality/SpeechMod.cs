@@ -80,7 +80,7 @@ namespace speechModality
                 }
                 json = json.Substring(0, json.Length - 2);
                 json += "] }";
-
+                Console.WriteLine(json);
                 //Send data to server
                 trySend_msg(json);
             }
