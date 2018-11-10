@@ -3,14 +3,13 @@
 	
   
   <rule id="rootRule" scope="public">
+    Lena
+
 	  <one-of>
-
       <item>
-        Lena
         <ruleref uri="#action"/>
-        <tag>out.action=rules.action;</tag>
+          <tag>out.action=rules.action;</tag>   
       </item>
-
 	  </one-of>
 	</rule>
 
@@ -21,6 +20,11 @@
 
       <item>
        <ruleref uri="#volume"/>
+       <item repeat="0-1">
+            <ruleref uri="#numbers"/>
+          
+            <item repeat="0-1">porcento</item>
+        </item>
       </item>
 
       <item>
@@ -49,7 +53,8 @@
         <one-of>
           <item>silêncio</item>
           <item>cala-te</item>
-          <item>xx</item>
+          <item>pouco barulho</item>
+          <item>chhheee</item>
         </one-of>
         <tag>out="VOLUME_MUTE"</tag> 
       </item>
@@ -57,9 +62,14 @@
       <item>
         <one-of>
           <item>sobe</item>
+          <item>aumenta</item>
           <item>levanta</item>
         </one-of>
-        o som 
+        <one-of>
+          <item>o som</item>
+          <item>o volume</item>
+        </one-of>
+        
         <tag>out="VOLUME_UP"</tag>
       </item>
 
@@ -69,7 +79,10 @@
           <item>desce</item>
           <item>diminui</item>
         </one-of>
-        o som 
+        <one-of>
+          <item>o som</item>
+          <item>o volume</item>
+        </one-of> 
         <tag>out="VOLUME_DOWN"</tag>
       </item>
 
@@ -89,15 +102,29 @@
   </rule>
 
   <rule id="pause">
-    <one-of>
       <item>
         <item repeat="0-1">
           mete 
             <item repeat="0-1">em</item>
         </item>
         pausa
+
+        <item repeat="0-1">
+          <one-of>
+            <item>no</item>
+            <item>o</item>
+          </one-of>
+        </item>
+
+        <item repeat="0-1">
+          <one-of>
+            
+            <item>vídeo</item>
+            <item>episódio</item>
+            <item>filme</item>
+          </one-of>
+        </item>
       </item>
-    </one-of>
 
     <tag>out="PAUSE"</tag>
   </rule>
@@ -107,8 +134,9 @@
       pára
       <item repeat="0-1">
         <one-of>
-          <item>vídeo</item>
-          <item>episódio</item>
+          <item>o vídeo</item>
+          <item>o episódio</item>
+          <item>o filme</item>
         </one-of>
       </item>
     </item>
@@ -121,6 +149,7 @@
       <item>morre</item>
       <item>adeus</item>
       <item>desliga</item>
+      <item>até amanhã</item>
       <item>
         tenho de
           <one-of>
@@ -146,7 +175,12 @@
 
         <one-of>
           <item>
-            grande <tag>out="FULLSCREEN_MAX"</tag>
+            <one-of>
+              <item>grande</item>
+              <item>maior</item>
+            </one-of>
+             
+            <tag>out="FULLSCREEN_MAX"</tag>
           </item>
           <item>
             pequena <tag>out="FULLSCREEN_MIN"</tag>
@@ -157,10 +191,108 @@
       <item>
         grande <tag>out="FULLSCREEN_MAX"</tag>
       </item>
+
       <item>
         pequena <tag>out="FULLSCREEN_MIN"</tag>
       </item>
     </one-of>
+
   </rule>
 
+  <rule id="numbers">
+    <one-of>
+
+      <item>
+        <one-of>
+          <item>1</item>
+          <item>um</item>
+          <item>primeiro</item>
+        </one-of>
+        <tag>out="1"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>2</item>
+          <item>dois</item>
+          <item>duas</item>
+          <item>segundo</item>
+        </one-of>
+        <tag>out="2"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>3</item>
+          <item>três</item>
+          <item>terceiro</item>
+        </one-of>
+        <tag>out="3"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>4</item>
+          <item>quatro</item>
+          <item>quarto</item>
+        </one-of>
+        <tag>out="4"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>5</item>
+          <item>cinco</item>
+          <item>quinto</item>
+        </one-of>
+        <tag>out="5"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>6</item>
+          <item>seis</item>
+          <item>sexto</item>
+        </one-of>
+        <tag>out="6"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>7</item>
+          <item>sete</item>
+          <item>sétimo</item>
+        </one-of>
+        <tag>out="7"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>8</item>
+          <item>oito</item>
+          <item>oitavo</item>
+        </one-of>
+        <tag>out="8"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>9</item>
+          <item>nove</item>
+          <item>nono</item>
+        </one-of>
+        <tag>out="9"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>10</item>
+          <item>dez</item>
+          <item>décimo</item>
+        </one-of>
+        <tag>out="3"</tag>
+      </item>
+        
+    </one-of>
+  </rule>
 </grammar>

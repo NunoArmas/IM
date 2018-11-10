@@ -27,21 +27,14 @@ namespace speechModality
             }
         }
 
-        private LifeCycleEvents lce;
-        private MmiCommunication mmic;
-
         private TcpClient client;
-        private NetworkStream stream; 
+        private NetworkStream stream;
+        private Socket client_sock=null;
 
         public SpeechMod()
         {
-
-            //init LifeCycleEvents..
-            //lce = new LifeCycleEvents("ASR", "FUSION","speech-1", "acoustic", "command"); // LifeCycleEvents(string source, string target, string id, string medium, string mode)
-            ////mmic = new MmiCommunication("localhost",9876,"User1", "ASR");  //PORT TO FUSION - uncomment this line to work with fusion later
-            //mmic = new MmiCommunication("localhost", 8000, "User1", "ASR"); // MmiCommunication(string IMhost, int portIM, string UserOD, string thisModalityName)
-
-            //mmic.Send(lce.NewContextRequest());
+            //iniciate connection to socket
+            connectSocket();
 
             //load pt recognizer
             sre = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("pt-PT"));
@@ -81,12 +74,37 @@ namespace speechModality
                 json = json.Substring(0, json.Length - 2);
                 json += "] }";
                 Console.WriteLine(json);
+
                 //Send data to server
-                trySend_msg(json);
+                Console.WriteLine(trySend_msg(json));
             }
 
-            //var exNot = lce.ExtensionNotification(e.Result.Audio.StartTime+"", e.Result.Audio.StartTime.Add(e.Result.Audio.Duration)+"",e.Result.Confidence, json);
-            //mmic.Send(exNot);
+        }
+
+        private bool checkSocket()
+        {
+            bool result = true;
+
+            return client != null && client_sock.Connected;
+            
+        }
+
+        private void connectSocket()
+        {
+            try
+            {
+                client = new TcpClient("localhost", 8081);
+                client_sock = client.Client;
+            }
+            catch
+            {
+                Console.WriteLine("Connection Failed");
+                if (client != null)
+                {
+                    client.Close();
+                }
+                client = null;
+            }
         }
 
         private bool trySend_msg(string message)
@@ -94,7 +112,12 @@ namespace speechModality
             bool result = false;
             try
             {
-                client = new TcpClient("localhost", 8081);
+
+                if (!checkSocket())
+                {
+                    connectSocket();
+                }
+             
 
                 int byteCount = Encoding.ASCII.GetByteCount(message);
                 byte[] sendData = new byte[byteCount];
@@ -102,20 +125,16 @@ namespace speechModality
 
                 stream = client.GetStream(); //Opens up the network stream
                 stream.Write(sendData, 0, sendData.Length); //Transmits data onto the stream
-                stream.Close();
-                client.Close();
                 result = true;
+
             }
-            catch (System.NullReferenceException) //Error if socket not open
+            catch
             {
-                //Adds debug to list box and shows message box
                 Console.WriteLine("Connection not installised");
                 Console.WriteLine("Failed to send data");
-            }catch (System.Net.Sockets.SocketException)
-            {
-                Console.WriteLine("Connection Failed");
-                Console.WriteLine("Connection failed");
+                result = false;
             }
+
             return result;
         }
     }

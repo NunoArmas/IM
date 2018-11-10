@@ -107,8 +107,10 @@ class Player(wx.Frame):
                 self.commandHandler('pause')
             elif self.existSublist(['EXIT'], data['recognized']):
                 self.commandHandler('exit')
-            elif self.existSublist(['FULLSCREEN'], data['recognized']):
-                self.commandHandler('full')
+            elif self.existSublist(['FULLSCREEN_MAX'], data['recognized']):
+                self.commandHandler('FULLSCREEN_MAX')
+            elif self.existSublist(['FULLSCREEN_MIN'], data['recognized']):
+                self.commandHandler('FULLSCREEN_MIN')
                 
 
     def existSublist(self, sublist, origina_list):
@@ -126,24 +128,32 @@ class Player(wx.Frame):
             'stop'  : self.stopVLC,
             'pause' : self.pauseVLC,
             'exit'  : self.exitVLC,
-            'set'   : self.jump,
-            'full'  : self.fullscreenVLC,
+            'play'  : self.play,
             'mute'  : self.muteVLC
         }
         # text = input("Text: ")
 
-        if text == 'set':
-            time={}
-            time['seconds']= "30"
-            time['minutes']= "1"
-            switch[text](time)
-        elif text in list(switch.keys()):
+        if text in list(switch.keys()):
             switch[text]()
+        elif text=='FULLSCREEN_MAX':
+            self.fullscreenVLC(True) 
+        elif text=='FULLSCREEN_MIN':
+            self.fullscreenVLC(False) 
 
-    def fullscreenVLC(self):
-        self.ShowFullScreen(self.fullscreen)
+        # if text == 'set':
+        #     time={}
+        #     time['seconds']= "30"
+        #     time['minutes']= "1"
+        #     switch[text](time)
 
-        self.fullscreen= not self.fullscreen
+        
+
+    def fullscreenVLC(self,direction=True):
+        self.ShowFullScreen(direction)
+
+    def play(self):
+        self.player.play()
+        
 
     def setVolumeVLC(self):
         volume = self.volslider.GetValue() * 2

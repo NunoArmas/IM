@@ -34,6 +34,7 @@ class Server:
                     self.flushin(s)
                 elif s is self.ss:
                     self.accept()
+
             if self.validMsg:
                 self.validMsg = False
                 return self.message
@@ -54,10 +55,8 @@ class Server:
             self.delClient(s)
         else:
             if len(data) > 0:
-                # print("\n\nMessage:  %s\n\n" % (data))
                 self.message = data
                 self.validMsg=True
-                self.delClient(s)
 
     def stop(self):
         self.ss.close()
@@ -66,6 +65,7 @@ class Server:
     def accept(self):
         """Accept a new connection.
         """
+        
         try: 
             csock, addr = self.ss.accept()
             self.addClient(csock, addr)
@@ -74,6 +74,7 @@ class Server:
         except:
             print("client not accepted")
             sys.exit()
+    
     
     def addClient(self, csock, addr):
         """Add a client connecting in csock."""
