@@ -15,6 +15,15 @@ try:
 except NameError:
     unicode = str  # Python 3
 
+DEFAULT_FOLDER='~/VLC_videos'
+DOWNLOADS_FOLDER='~/Downloads'
+
+
+if sys.platform == "win32": # for Windows
+    DEFAULT_FOLDER=r'C:/Users/'+os.getlogin()+'/VLC_videos'
+    DOWNLOADS_FOLDER=r'C:/Users/'+os.getlogin()+'/Downloads'
+
+
 
 class Player(wx.Frame):
     """The main window has to deal with events.
@@ -94,6 +103,9 @@ class Player(wx.Frame):
         self.thread = threading.Thread(target=self.serverConn)
         self.thread.start()
 
+        # Create video folder
+        self.createDefaultFolder()
+
     def serverConn(self):
         serv = Server()
 
@@ -111,8 +123,8 @@ class Player(wx.Frame):
                 self.commandHandler('FULLSCREEN_MAX')
             elif self.existSublist(['FULLSCREEN_MIN'], data['recognized']):
                 self.commandHandler('FULLSCREEN_MIN')
-                
-
+    
+   
     def existSublist(self, sublist, origina_list):
         count = 0
 
@@ -146,19 +158,79 @@ class Player(wx.Frame):
         #     time['minutes']= "1"
         #     switch[text](time)
 
-        
+    def getVideoNames(self,directory=DEFAULT_FOLDER):
+        files = os.listdir(directory)
+        lista = filter(lambda x: x.split('.')[-1]!="srt", files)
+        return list(lista)
+
+    def existDefaultFolder(self):
+        return os.path.exists(DEFAULT_FOLDER) and os.path.isdir(DEFAULT_FOLDER)
+    
+    def createDefaultFolder(self):
+        if not self.existDefaultFolder():
+            os.mkdir(DEFAULT_FOLDER)
+
+    def openDirWindow(self,directory=DEFAULT_FOLDER):
+        dlg = wx.FileDialog(self, "Choose a file", directory, "","*.*", wx.FD_OPEN)
+
+        if dlg.ShowModal() == wx.ID_OK:
+            dirname = dlg.GetDirectory()
+            filename = dlg.GetFilename()
+            dlg.Destroy()
+            return(dirname,filename)
+        else:
+            dlg.Destroy()
+            return None
+
+    def openFile(self,filename=None,dirname=None):
+        if filename and dirname:
+            self.Media = self.Instance.media_new(unicode(os.path.join(dirname, filename)))
+            self.player.set_media(self.Media)
+            # Report the title of the file chosen
+            title = self.player.get_title()
+            #  if an error was encountred while retriving the title, then use
+            #  filename
+            if title == -1:
+                title = filename
+            self.SetTitle("%s - wxVLCplayer" % title)
+
+            # set the window id where to render VLC's video output
+            handle = self.videopanel.GetHandle()
+            if sys.platform.startswith('linux'): # for Linux using the X Server
+                self.player.set_xwindow(handle)
+            elif sys.platform == "win32": # for Windows
+                self.player.set_hwnd(handle)
+            elif sys.platform == "darwin": # for MacOS
+                self.player.set_nsobject(handle)
+
+            return title
+        else:
+            return None
 
     def fullscreenVLC(self,direction=True):
         self.ShowFullScreen(direction)
 
     def play(self):
         self.player.play()
-        
 
-    def setVolumeVLC(self):
-        volume = self.volslider.GetValue() * 2
+    def setVolumeVLC(self,volume=5,direction=True):
+        player_volume = self.player.audio_get_volume()
+
+        final_volume=0
+        if direction:
+            final_volume=player_volume+volume
+        else:
+            final_volume=player_volume-volume
+
+        if final_volume<0:
+            final_volume=0
+        elif final_volume>200:
+            final_volume=200
+
+        self.volslider.SetValue(final_volume/2)
+                
         # vlc.MediaPlayer.audio_set_volume returns 0 if success, -1 otherwise
-        if self.player.audio_set_volume(volume) == -1:
+        if self.player.audio_set_volume(final_volume) == -1:
             print("Failed to set volume") 
 
     def muteVLC(self):
@@ -185,10 +257,11 @@ class Player(wx.Frame):
             final_time = time-jump_time
         
         if final_time<0:
-            self.player.set_time(0)
-        else:
-            self.player.set_time(final_time)
-
+            final_time=0
+        elif final_time>self.player.get_length():
+            final_time=self.player.get_length()
+            
+        self.player.set_time(final_time)
         
     def stopVLC(self):
         self.player.stop()
