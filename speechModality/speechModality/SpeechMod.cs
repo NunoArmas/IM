@@ -30,9 +30,12 @@ namespace speechModality
         private TcpClient client;
         private NetworkStream stream;
         private Socket client_sock=null;
+        private Tts lena;
 
         public SpeechMod()
         {
+            lena = new Tts();
+            //lena.Speak("Bom dia. Eu sou a Lena.");
             //iniciate connection to socket
             connectSocket();
 
@@ -95,6 +98,8 @@ namespace speechModality
             {
                 client = new TcpClient("localhost", 8081);
                 client_sock = client.Client;
+
+                lena.Speak("Conexão com o servidor bem sucedida.");
             }
             catch
             {
@@ -126,7 +131,7 @@ namespace speechModality
                 stream = client.GetStream(); //Opens up the network stream
                 stream.Write(sendData, 0, sendData.Length); //Transmits data onto the stream
                 result = true;
-
+                lena.Speak("Mensagem Enviada");
             }
             catch
             {

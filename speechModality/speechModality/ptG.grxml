@@ -53,9 +53,34 @@
         <ruleref uri="#fullscreen"/>
       </item>
 
+      <item>
+        <ruleref uri="#volumeMute"/>
+      </item>
+
+      <item>
+        <ruleref uri="#volumeON"/>
+      </item>
+
+      <item>
+        <ruleref uri="#forwardbackward"/>
+      </item>
     </one-of>
   </rule>
 
+  <rule id="forwardbackward">
+    <one-of>
+      <item>
+        já vi sto
+        <tag>out="FORWARD"</tag>
+      </item>
+
+      <item>
+        não percebi
+        <tag>out="BACKWARD"</tag>
+      </item>
+    </one-of>
+  </rule>
+  
   <rule id="units">
     <one-of>
       <item>
@@ -104,30 +129,30 @@
       </item>
     </one-of>
   </rule>
+
+  <rule id="volumeMute">
+    <one-of>
+      <item>silêncio</item>
+      <item>cala-te</item>
+      <item>pouco barulho</item>
+      <item>cheee</item>
+      <item>shiu</item>
+    </one-of>
+    <tag>out="VOLUME_OFF"</tag>
+  </rule>
+
+  <rule id="volumeON">
+    <one-of>
+      <item>Liga o som</item>
+      <item>quero ouvir</item>
+      <item>Não ouço nada.</item>
+      <item>Não consigo ouvir.</item>
+    </one-of>
+    <tag>out="VOLUME_ON"</tag>
+  </rule>
   
   <rule id="volume">
     <one-of>
-
-      <item>
-        <one-of>
-          <item>silêncio</item>
-          <item>cala-te</item>
-          <item>pouco barulho</item>
-          <item>chhheee</item>
-        </one-of>
-        <tag>out="VOLUME_OFF"</tag> 
-      </item>
-
-      <item>
-        <one-of>
-          <item>Liga o som</item>
-          <item>quero ouvir</item>
-          <item>pouco barulho</item>
-          <item>chhheee</item>
-        </one-of>
-        <tag>out="VOLUME_ON"</tag>
-      </item>
-      
       <item>
         <one-of>
           <item>sobe</item>
