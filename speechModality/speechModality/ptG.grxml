@@ -10,6 +10,25 @@
         <ruleref uri="#action"/>
           <tag>out.action=rules.action;</tag>   
       </item>
+      <item>
+        <ruleref uri="#volume"/>
+        <tag>out.volume = rules.latest()</tag>
+        <item repeat="0-1">
+          <ruleref uri="#numbers"/>
+          <item repeat="0-1">porcento</item>
+          <tag>out.numbers = rules.latest()</tag>
+        </item>
+      </item>
+      <item>
+        <ruleref uri="#forback"/>
+        <tag>out.forback = rules.latest()</tag>
+        <item repeat="0-3">
+          <ruleref uri="#numbers"/>
+          <tag>out.numbers = rules.latest()</tag>
+          <ruleref uri="#units"/>
+          <tag>out.units = rules.latest()</tag>
+        </item>
+      </item>
 	  </one-of>
 	</rule>
 
@@ -17,14 +36,6 @@
 
   <rule id="action">
     <one-of>
-
-      <item>
-       <ruleref uri="#volume"/>
-       <item repeat="0-1">
-            <ruleref uri="#numbers"/>
-            <item repeat="0-1">porcento</item>
-        </item>
-      </item>
 
       <item>
        <ruleref uri="#pause"/>
@@ -45,6 +56,55 @@
     </one-of>
   </rule>
 
+  <rule id="units">
+    <one-of>
+      <item>
+        <one-of>
+          <item>segundos</item>
+          <item>segundo</item>
+        </one-of>
+        <tag>out="SECONDS"</tag>
+      </item>    
+      <item>
+        <one-of>
+          <item>minutos</item>
+          <item>minuto</item>
+        </one-of>
+        <tag>out="MINUTES"</tag>
+      </item>
+      <item>
+        <one-of>
+          <item>horas</item>
+          <item>hora</item>
+        </one-of>
+        <tag>out="HOURS"</tag>
+      </item>
+    </one-of>
+  </rule>
+  
+  <rule id="forback">
+    <one-of>
+      <item>
+        <one-of>
+          <item>
+            avança
+          </item>
+          <item>
+            quero avançar
+          </item>
+        </one-of>
+        <tag>out="FORWARD_VAL"</tag>
+      </item>
+      <item>
+        <one-of>
+          <item>Recua</item>
+          <item>quero recuar</item>
+        </one-of>
+        <tag>out="BACKWARD_VAL"</tag>
+      </item>
+    </one-of>
+  </rule>
+  
   <rule id="volume">
     <one-of>
 
@@ -55,9 +115,19 @@
           <item>pouco barulho</item>
           <item>chhheee</item>
         </one-of>
-        <tag>out="VOLUME_MUTE"</tag> 
+        <tag>out="VOLUME_OFF"</tag> 
       </item>
 
+      <item>
+        <one-of>
+          <item>Liga o som</item>
+          <item>quero ouvir</item>
+          <item>pouco barulho</item>
+          <item>chhheee</item>
+        </one-of>
+        <tag>out="VOLUME_ON"</tag>
+      </item>
+      
       <item>
         <one-of>
           <item>sobe</item>
