@@ -40,7 +40,7 @@ class Player(wx.Frame):
         self.file_menu.Append(1, "&Open", "Open from file..")
         self.file_menu.AppendSeparator()
         self.file_menu.Append(2, "&Close", "Quit")
-        self.Bind(wx.EVT_MENU, self.OnOpen, id=1)
+        self.Bind(wx.EVT_MENU, self.openDirWindow, id=1)
         self.Bind(wx.EVT_MENU, self.OnExit, id=2)
         self.frame_menubar.Append(self.file_menu, "File")
         self.SetMenuBar(self.frame_menubar)
@@ -129,27 +129,29 @@ class Player(wx.Frame):
         elif command == "PAUSE":
             self.pauseVLC()
         elif command == "PLAY":
-            self.play()
+            self.playVLC()
+        elif command == "STOP":
+            self.stopVLC()
         elif command == "FULLSCREEN_MAX":
             self.fullscreenVLC(True)
         elif command == "FULLSCREEN_MIN":
             self.fullscreenVLC(False)
         elif command == "VOLUME_UP":
-            self.setVolumeVLC(command_list[1])
+            self.setVolumeVLC(command_list[1:])
         elif command == "VOLUME_DOWN":
-            self.setVolumeVLC(command_list[1],False)
+            self.setVolumeVLC(command_list[1:],False)
         elif command == "VOLUME_ON":
-            self.muteVLC()
-        elif command == "VOLUME_OFF":
             self.muteVLC(False)
+        elif command == "VOLUME_OFF":
+            self.muteVLC(True)
         elif command == "FORWARD_VAL":
-            self.forward(command_list[1:])
+            self.forwardVLC(command_list[1:])
         elif command == "BACKWARD_VAL":
-            self.forward(command_list[1:],False)
+            self.forwardVLC(command_list[1:],False)
         elif command == "FORWARD":
-            self.forward(['10','SECONDS'])
+            self.forwardVLC(['10','SECONDS'])
         elif command == "BACKWARD":
-            self.forward(['10','SECONDS'],False)
+            self.forwardVLC(['10','SECONDS'],False)
         
 
     def serverConn(self):
@@ -164,9 +166,10 @@ class Player(wx.Frame):
 
         while True:
             data = serv.recv().decode()
+            print(data)
             data = json.loads(data)
 
-            print(data)
+            
 
             if len(data['recognized'])>0:
                 self.commandHandler(data['recognized'])
@@ -233,10 +236,15 @@ class Player(wx.Frame):
     def fullscreenVLC(self,direction=True):
         self.ShowFullScreen(direction)
 
-    def play(self):
+    def playVLC(self):
         self.player.play()
 
-    def setVolumeVLC(self,volume=5,direction=True):
+    def setVolumeVLC(self,volume=[],direction=True):
+        if volume == []:
+            volume=5
+        else:
+            volume = int(volume[0])
+
         player_volume = self.player.audio_get_volume()
 
         final_volume=0
@@ -259,7 +267,7 @@ class Player(wx.Frame):
     def muteVLC(self, mute=True):
        self.player.audio_set_mute(mute)
     
-    def forward(self,lista,direction=True):
+    def forwardVLC(self,lista,direction=True):
         time={}
         for i in range(len(lista)):
             try:

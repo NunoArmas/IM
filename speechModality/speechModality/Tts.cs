@@ -85,7 +85,7 @@ namespace speechModality
  
 
             //set voice
-            tts.SelectVoiceByHints(VoiceGender.NotSet, VoiceAge.NotSet, 0, new System.Globalization.CultureInfo("pt-PT"));
+            tts.SelectVoiceByHints(VoiceGender.Female, VoiceAge.NotSet, 0, new System.Globalization.CultureInfo("pt-PT"));
           
             //tts.SelectVoice("...")
 
@@ -104,7 +104,7 @@ namespace speechModality
         public void Speak(string text)
         {
             while (player.Stream != null) { 
-                Console.WriteLine("Waiting...");
+                //Console.WriteLine("Waiting...");
                 }
             
             //create audio stream with speech
