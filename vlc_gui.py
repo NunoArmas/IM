@@ -122,6 +122,8 @@ class Player(wx.Frame):
     def commandHandler(self,command_list):
         command = command_list[0]
 
+        print("Command: "+command)
+
         if command=="EXIT":
             self.exitVLC()
         elif command == "PAUSE":
@@ -140,6 +142,15 @@ class Player(wx.Frame):
             self.muteVLC()
         elif command == "VOLUME_OFF":
             self.muteVLC(False)
+        elif command == "FORWARD_VAL":
+            self.forward(command_list[1:])
+        elif command == "BACKWARD_VAL":
+            self.forward(command_list[1:],False)
+        elif command == "FORWARD":
+            self.forward(['10','SECONDS'])
+        elif command == "BACKWARD":
+            self.forward(['10','SECONDS'],False)
+        
 
     def serverConn(self):
         serv = Server()
@@ -154,6 +165,8 @@ class Player(wx.Frame):
         while True:
             data = serv.recv().decode()
             data = json.loads(data)
+
+            print(data)
 
             if len(data['recognized'])>0:
                 self.commandHandler(data['recognized'])
@@ -246,14 +259,24 @@ class Player(wx.Frame):
     def muteVLC(self, mute=True):
        self.player.audio_set_mute(mute)
     
+    def forward(self,lista,direction=True):
+        time={}
+        for i in range(len(lista)):
+            try:
+                value = int(lista[i])
+                time[lista[i+1]] = value
+            except:
+                pass
+        self.jump(time,direction)
+
     def jump(self,time,direction=True):
         jump_time = 0
         for key in list(time.keys()):
-            if key=='seconds':
+            if key=='SECONDS':
                 jump_time+=int(time[key])*1000
-            elif key=='minutes':
+            elif key=='MINUTES':
                 jump_time+=int(time[key])*60000
-            elif key=='hours':
+            elif key=='HOURS':
                 jump_time+=int(time[key])*60000*60
 
         time =self.player.get_time()
