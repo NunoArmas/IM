@@ -9,6 +9,7 @@ import os
 import sys
 import threading
 import json
+import random
 
 try:
     unicode        # Python 2
@@ -98,6 +99,8 @@ class Player(wx.Frame):
         self.Instance = vlc.Instance()
         self.player = self.Instance.media_player_new()
         self.fullscreen = True
+        self.filename=None
+        self.dirname=None
 
         # Server Thread
         self.thread = threading.Thread(target=self.serverConn)
@@ -106,25 +109,6 @@ class Player(wx.Frame):
         # Create video folder
         self.createDefaultFolder()
 
-    def serverConn(self):
-        serv = Server()
-
-        while True:
-            data = serv.recv().decode()
-            data = json.loads(data)
-
-            print(data)
-
-            if self.existSublist(['PAUSE'] , data['recognized']):
-                self.commandHandler('pause')
-            elif self.existSublist(['EXIT'], data['recognized']):
-                self.commandHandler('exit')
-            elif self.existSublist(['FULLSCREEN_MAX'], data['recognized']):
-                self.commandHandler('FULLSCREEN_MAX')
-            elif self.existSublist(['FULLSCREEN_MIN'], data['recognized']):
-                self.commandHandler('FULLSCREEN_MIN')
-    
-   
     def existSublist(self, sublist, origina_list):
         count = 0
 
@@ -135,33 +119,56 @@ class Player(wx.Frame):
         return count==len(sublist)
 
 
-    def commandHandler(self,text=''):
-        switch ={
-            'stop'  : self.stopVLC,
-            'pause' : self.pauseVLC,
-            'exit'  : self.exitVLC,
-            'play'  : self.play,
-            'mute'  : self.muteVLC
-        }
-        # text = input("Text: ")
+    def commandHandler(self,command_list):
+        command = command_list[0]
 
-        if text in list(switch.keys()):
-            switch[text]()
-        elif text=='FULLSCREEN_MAX':
-            self.fullscreenVLC(True) 
-        elif text=='FULLSCREEN_MIN':
-            self.fullscreenVLC(False) 
+        if command=="EXIT":
+            self.exitVLC()
+        elif command == "PAUSE":
+            self.pauseVLC()
+        elif command == "PLAY":
+            self.play()
+        elif command == "FULLSCREEN_MAX":
+            self.fullscreenVLC(True)
+        elif command == "FULLSCREEN_MIN":
+            self.fullscreenVLC(False)
+        elif command == "VOLUME_UP":
+            self.setVolumeVLC(command_list[1])
+        elif command == "VOLUME_DOWN":
+            self.setVolumeVLC(command_list[1],False)
+        elif command == "VOLUME_ON":
+            self.muteVLC()
+        elif command == "VOLUME_OFF":
+            self.muteVLC(False)
 
-        # if text == 'set':
-        #     time={}
-        #     time['seconds']= "30"
-        #     time['minutes']= "1"
-        #     switch[text](time)
+    def serverConn(self):
+        serv = Server()
 
-    def getVideoNames(self,directory=DEFAULT_FOLDER):
+        # while True:
+        #     text = input("Text: ")
+
+        #     if text =='a':
+        #         self.muteVLC(False)
+
+
+        while True:
+            data = serv.recv().decode()
+            data = json.loads(data)
+
+            if len(data['recognized'])>0:
+                self.commandHandler(data['recognized'])
+
+    
+    def playRandomVideo(self):
+        directory,files = self.getVideoFilesbyPath()
+        index = random.randint(0, len(files)-1)
+
+        self.playFile(directory,files[index])
+
+    def getVideoFilesbyPath(self,directory=DEFAULT_FOLDER):
         files = os.listdir(directory)
         lista = filter(lambda x: x.split('.')[-1]!="srt", files)
-        return list(lista)
+        return (directory,list(lista))
 
     def existDefaultFolder(self):
         return os.path.exists(DEFAULT_FOLDER) and os.path.isdir(DEFAULT_FOLDER)
@@ -182,7 +189,7 @@ class Player(wx.Frame):
             dlg.Destroy()
             return None
 
-    def openFile(self,filename=None,dirname=None):
+    def playFile(self,dirname=None,filename=None):
         if filename and dirname:
             self.Media = self.Instance.media_new(unicode(os.path.join(dirname, filename)))
             self.player.set_media(self.Media)
@@ -193,7 +200,8 @@ class Player(wx.Frame):
             if title == -1:
                 title = filename
             self.SetTitle("%s - wxVLCplayer" % title)
-
+            self.title=filename
+            self.dirname=dirname
             # set the window id where to render VLC's video output
             handle = self.videopanel.GetHandle()
             if sys.platform.startswith('linux'): # for Linux using the X Server
@@ -202,6 +210,8 @@ class Player(wx.Frame):
                 self.player.set_hwnd(handle)
             elif sys.platform == "darwin": # for MacOS
                 self.player.set_nsobject(handle)
+            
+            self.play()
 
             return title
         else:
@@ -233,10 +243,8 @@ class Player(wx.Frame):
         if self.player.audio_set_volume(final_volume) == -1:
             print("Failed to set volume") 
 
-    def muteVLC(self):
-       is_mute = self.player.audio_get_mute()
-
-       self.player.audio_set_mute(not is_mute)
+    def muteVLC(self, mute=True):
+       self.player.audio_set_mute(mute)
     
     def jump(self,time,direction=True):
         jump_time = 0
@@ -275,6 +283,20 @@ class Player(wx.Frame):
         self.Close()
         exit()
 
+    def deleteCurrentVideo(self):
+        if self.dirname and self.filename:
+            self.deleteVideo(self.filename ,self.dirname)
+
+    def deleteVideo(self, filename, directory=DEFAULT_FOLDER):
+        full_path = os.path.join(directory,filename)
+        
+        if os.path.exists(directory) and os.path.isfile(full_path):
+            self.player.stop()
+            os.remove(full_path)
+
+
+
+
 
 
 
@@ -301,6 +323,8 @@ class Player(wx.Frame):
             self.player.set_media(self.Media)
             # Report the title of the file chosen
             title = self.player.get_title()
+            self.title=filename
+            self.dirname=dirname
             #  if an error was encountred while retriving the title, then use
             #  filename
             if title == -1:
