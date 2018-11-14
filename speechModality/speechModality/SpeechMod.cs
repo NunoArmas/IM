@@ -121,17 +121,20 @@ namespace speechModality
                 if (!checkSocket())
                 {
                     connectSocket();
+                    result = false;
+                    lena.Speak("A mensagem n±ao foi enviada");
                 }
-             
+                else
+                {
+                    int byteCount = Encoding.ASCII.GetByteCount(message);
+                    byte[] sendData = new byte[byteCount];
+                    sendData = Encoding.ASCII.GetBytes(message);
 
-                int byteCount = Encoding.ASCII.GetByteCount(message);
-                byte[] sendData = new byte[byteCount];
-                sendData = Encoding.ASCII.GetBytes(message);
-
-                stream = client.GetStream(); //Opens up the network stream
-                stream.Write(sendData, 0, sendData.Length); //Transmits data onto the stream
-                result = true;
-                lena.Speak("Mensagem Enviada");
+                    stream = client.GetStream(); //Opens up the network stream
+                    stream.Write(sendData, 0, sendData.Length); //Transmits data onto the stream
+                    result = true;
+                    lena.Speak("Mensagem Enviada");
+                }
             }
             catch
             {

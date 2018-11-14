@@ -119,7 +119,12 @@
   
   <rule id="openfolder">
     <one-of>
-      <item>quero ver
+      <item>
+        <one-of>
+          <item>quero ver</item>
+          <item>abre</item>
+        </one-of>
+
         <one-of>
           <item>a minha coleção
             <item repeat ="0-1">de videos</item>

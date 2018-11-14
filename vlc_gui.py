@@ -100,7 +100,7 @@ class Player(wx.Frame):
         self.player = self.Instance.media_player_new()
         self.fullscreen = True
         self.filename=None
-        self.dirname=None
+        self.title=None
 
         # Server Thread
         self.thread = threading.Thread(target=self.serverConn)
@@ -108,16 +108,6 @@ class Player(wx.Frame):
 
         # Create video folder
         self.createDefaultFolder()
-
-    def existSublist(self, sublist, origina_list):
-        count = 0
-
-        for s in sublist:
-            if s in origina_list:
-                count+=1
-        
-        return count==len(sublist)
-
 
     def commandHandler(self,command_list):
         command = command_list[0]
@@ -128,6 +118,8 @@ class Player(wx.Frame):
             self.exitVLC()
         elif command == "PAUSE":
             self.pauseVLC()
+        elif command == "UNPAUSE":
+            self.pauseVLC(False)
         elif command == "PLAY":
             self.playVLC()
         elif command == "STOP":
@@ -152,28 +144,22 @@ class Player(wx.Frame):
             self.forwardVLC(['10','SECONDS'])
         elif command == "BACKWARD":
             self.forwardVLC(['10','SECONDS'],False)
+        elif command == "OPEN_FOLDER":
+            self.openDirWindow() 
+        elif command == "OPEN_RANDOM":
+            self.playRandomVideo() 
+        elif command == "DELETE_FILE":
+            self.deleteCurrentVideo()
         
-
     def serverConn(self):
         serv = Server()
 
-        # while True:
-        #     text = input("Text: ")
-
-        #     if text =='a':
-        #         self.muteVLC(False)
-
-
         while True:
             data = serv.recv().decode()
-            print(data)
             data = json.loads(data)
-
-            
 
             if len(data['recognized'])>0:
                 self.commandHandler(data['recognized'])
-
     
     def playRandomVideo(self):
         directory,files = self.getVideoFilesbyPath()
@@ -218,6 +204,7 @@ class Player(wx.Frame):
             self.SetTitle("%s - wxVLCplayer" % title)
             self.title=filename
             self.dirname=dirname
+
             # set the window id where to render VLC's video output
             handle = self.videopanel.GetHandle()
             if sys.platform.startswith('linux'): # for Linux using the X Server
@@ -227,7 +214,7 @@ class Player(wx.Frame):
             elif sys.platform == "darwin": # for MacOS
                 self.player.set_nsobject(handle)
             
-            self.play()
+            self.playVLC()
 
             return title
         else:
@@ -249,9 +236,9 @@ class Player(wx.Frame):
 
         final_volume=0
         if direction:
-            final_volume=player_volume+volume
+            final_volume=player_volume+volume*2
         else:
-            final_volume=player_volume-volume
+            final_volume=player_volume-volume*2
 
         if final_volume<0:
             final_volume=0
@@ -307,23 +294,31 @@ class Player(wx.Frame):
         self.timeslider.SetValue(0)
         self.timer.Stop()
     
-    def pauseVLC(self):
-        self.player.pause()
+    def pauseVLC(self,option=True):
+        self.player.set_pause(option)
     
     def exitVLC(self):
         self.Close()
         exit()
+        sys.exit(0)
 
     def deleteCurrentVideo(self):
-        if self.dirname and self.filename:
-            self.deleteVideo(self.filename ,self.dirname)
+        print((self.title,self.dirname))
+        if self.title!="" and self.filename!="":
+            self.deleteVideo(self.title ,self.dirname)
 
     def deleteVideo(self, filename, directory=DEFAULT_FOLDER):
-        full_path = os.path.join(directory,filename)
+        full_path_video = os.path.join(directory,filename)
         
-        if os.path.exists(directory) and os.path.isfile(full_path):
-            self.player.stop()
-            os.remove(full_path)
+        subtitles = filename.split('.')[0]+'.srt'
+        full_path_subs = os.path.join(directory,subtitles)
+        
+        if os.path.exists(directory):
+            if os.path.isfile(full_path_video):
+                self.player.stop()
+                os.remove(full_path_video)
+            if os.path.isfile(full_path_subs):
+                os.remove(full_path_subs)
 
 
 
