@@ -19,15 +19,14 @@
           <tag>out.numbers = rules.latest()</tag>
         </item>
       </item>
+      
       <item>
         <ruleref uri="#forback"/>
         <tag>out.forback = rules.latest()</tag>
-        <item repeat="0-3">
-          <ruleref uri="#numbers"/>
-          <tag>out.numbers = rules.latest()</tag>
-          <ruleref uri="#units"/>
-          <tag>out.units = rules.latest()</tag>
-        </item>
+        <ruleref uri ="#numbers"/>
+        <tag>out.numbers = rules.latest()</tag>
+        <ruleref uri ="#units"/>
+        <tag>out.units = rules.latest()</tag>
       </item>
 	  </one-of>
 	</rule>
@@ -70,17 +69,51 @@
   <rule id="forwardbackward">
     <one-of>
       <item>
-        já vi sto
+        <one-of>
+          <item>já vi
+            <one-of>
+              <item>isto</item>
+              <item>esta
+                <one-of>
+                  <item>cena</item>
+                  <item>parte</item>
+                </one-of>
+              </item>
+            </one-of>
+          </item>
+          <item>quero
+            <one-of>
+              <item>avançar</item>
+              <item>passar à frente</item>
+            </one-of>
+          </item>
+        </one-of>
         <tag>out="FORWARD"</tag>
       </item>
 
       <item>
-        não percebi
+        <one-of>
+          <item>não
+            <one-of>
+              <item>entendi</item>
+              <item>percebi</item>
+            </one-of>
+            <item repeat ="0-1">
+              <item>
+                esta
+                <one-of>
+                  <item>parte</item>
+                  <item>cena</item>
+                </one-of>
+              </item>
+            </item>
+          </item>
+        </one-of>
         <tag>out="BACKWARD"</tag>
       </item>
     </one-of>
   </rule>
-  
+
   <rule id="units">
     <one-of>
       <item>
@@ -88,21 +121,21 @@
           <item>segundos</item>
           <item>segundo</item>
         </one-of>
-        <tag>out="SECONDS"</tag>
-      </item>    
+        <tag>out = "SECONDS"</tag>
+      </item>
       <item>
         <one-of>
           <item>minutos</item>
           <item>minuto</item>
         </one-of>
-        <tag>out="MINUTES"</tag>
+        <tag>out = "MINUTES"</tag>
       </item>
       <item>
         <one-of>
           <item>horas</item>
           <item>hora</item>
         </one-of>
-        <tag>out="HOURS"</tag>
+        <tag>out = "HOURS"</tag>
       </item>
     </one-of>
   </rule>
@@ -384,7 +417,7 @@
           <item>dez</item>
           <item>décimo</item>
         </one-of>
-        <tag>out="3"</tag>
+        <tag>out="10"</tag>
       </item>
         
     </one-of>
