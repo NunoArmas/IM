@@ -146,6 +146,8 @@ class Player(wx.Frame):
             self.forwardVLC(['10','SECONDS'],False)
         elif command == "OPEN_FOLDER":
             self.openDirWindow() 
+        elif command == "OPEN_Downloads":
+            self.openDirWindow(DOWNLOADS_FOLDER) 
         elif command == "OPEN_RANDOM":
             self.playRandomVideo() 
         elif command == "DELETE_FILE":
