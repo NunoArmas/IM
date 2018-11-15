@@ -239,8 +239,10 @@
   </rule>
 
   <rule id="forwardbackward">
+
     <one-of>
       <item>
+
         <one-of>
           <item>
             já vi
@@ -255,6 +257,7 @@
               </item>
             </one-of>
           </item>
+
           <item>
             quero
             <one-of>
@@ -262,7 +265,12 @@
               <item>passar à frente</item>
             </one-of>
           </item>
+          <item>avança</item>
+          <item>anda 
+            <item repeat="0-1">mais</item>
+          para a frente</item>
         </one-of>
+
         <tag>out="FORWARD"</tag>
       </item>
 
