@@ -57,31 +57,94 @@ namespace speechModality
             onRecognized(new SpeechEventArg() { Text = e.Result.Text, Confidence = e.Result.Confidence, Final = false });
         }
 
+        private string[] getTags(SemanticValue s)
+        {
+            List<string> tags = new List<string>();
+
+            foreach (var result in s)
+            {
+                string value = (string)result.Value.Value;
+
+                tags.Add(value);
+            }
+
+            return tags.ToArray();
+        }
+
         private void Sre_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
 
 
             onRecognized(new SpeechEventArg(){Text = e.Result.Text, Confidence = e.Result.Confidence, Final = true});
 
-            Console.Write(e.Result.Confidence);
-
             if (e.Result.Confidence >= 0.6)
             {
-                //SEND
-                // IMPORTANT TO KEEP THE FORMAT {"recognized":["SHAPE","COLOR"]}
-                string json = "{ \"recognized\": [";
-                foreach (var resultSemantic in e.Result.Semantics)
-                {
-                    json += "\"" + resultSemantic.Value.Value + "\", ";
-                }
-                json = json.Substring(0, json.Length - 2);
-                json += "] }";
-                Console.WriteLine(json);
+                string[] tags = getTags(e.Result.Semantics);
+                string msg = needsConfirmation(tags);
 
-                //Send data to server
-                Console.WriteLine(trySend_msg(json));
+                if (msg != null)
+                {
+                    Console.WriteLine("\n\nConfirmed!!");
+
+                    //Send data to server
+                    if (!msg.Equals("")){
+                        Console.WriteLine("Sending: "+msg);
+                        trySend_msg(msg);
+                    }
+                }
             }
 
+        }
+
+        private string makeMSG(string[] tags)
+        {
+            string json = "{ \"recognized\": [";
+            foreach (string t in tags)
+            {
+                json += "\"" + t + "\", ";
+
+            }
+            json = json.Substring(0, json.Length - 2);
+            json += "] }";
+
+            return json;
+        }
+
+
+        private bool waitingConfirmation = false;
+        private string msgToSend = null;
+
+        private string needsConfirmation(string[] tags)
+        {
+            Console.WriteLine("\n\nConfirmation: ");
+
+            foreach (string t in tags)
+            {
+                if (t.Equals("EXIT")){
+                    msgToSend = makeMSG(tags);
+                    waitingConfirmation = true;
+                    return null;
+                }
+                else if(t.Equals("YES"))
+                {
+                    waitingConfirmation = false;
+                    return msgToSend;
+                }
+                else if (t.Equals("NO"))
+                {
+                    waitingConfirmation = false;
+                    return "";
+                }
+            }
+
+            if (waitingConfirmation)
+            {
+                return null;
+            }
+            else
+            {
+                return makeMSG(tags);
+            }
         }
 
         private bool checkSocket()
