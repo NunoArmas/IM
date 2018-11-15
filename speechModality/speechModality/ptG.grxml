@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 <grammar xml:lang="pt-PT" version="1.0" xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0">
-	
-  
+
+
   <rule id="rootRule" scope="public">
     <one-of>
       <item>
@@ -34,16 +34,16 @@
           </item>
 
         </one-of>
-      
+
       </item>
-    
-    
+
+
       <item>
         <ruleref uri="#confirmation"/>
         <tag>out.confirmation = rules.latest()</tag>
       </item>
     </one-of>
-	</rule>
+  </rule>
 
   <rule id="action">
     <one-of>
@@ -51,13 +51,13 @@
       <item>
         <ruleref uri="#play"/>
       </item>
-      
+
       <item>
-       <ruleref uri="#pause"/>
+        <ruleref uri="#pause"/>
       </item>
 
       <item>
-       <ruleref uri="#stop"/>
+        <ruleref uri="#stop"/>
       </item>
 
       <item>
@@ -99,39 +99,47 @@
       <item>
         <ruleref uri="#delete_file"/>
       </item>
-      
+
     </one-of>
   </rule>
 
   <rule id="delete_file">
     <one-of>
-      <item>apaga
-          <one-of>
-            <item>isto</item>
-            <item>este
-              <one-of>
-                <item>video</item>
-                <item>ficheiro</item>
-              </one-of>
+      <item>
+        apaga
+        <one-of>
+          <item>isto</item>
+          <item>
+            <one-of>
+              <item>este</item>
+              <item>o</item>
+            </one-of>
+
+            <one-of>
+              <item>video</item>
+              <item>ficheiro</item>
+            </one-of>
           </item>
-          </one-of>
+        </one-of>
       </item>
     </one-of>
     <tag>out="DELETE_FILE"</tag>
   </rule>
-  
+
   <rule id="openrandom">
     <one-of>
       <item>surpreende-me</item>
       <item>mostra-me um video</item>
-      <item>quero ver
+      <item>
+        quero ver
         <one-of>
           <item>algo</item>
           <item>um video</item>
           <item>qualquer coisa</item>
         </one-of>
       </item>
-      <item>escolhe um video
+      <item>
+        escolhe um video
         <one-of>
           <item>ao calhas</item>
           <item>a sorte</item>
@@ -140,47 +148,67 @@
     </one-of>
     <tag>out = "OPEN_RANDOM"</tag>
   </rule>
-  
-  <rule id="openfolder">
-      <one-of>
-        <item>
-          <one-of>
-            <item>quero ver</item>
-            <item>abre</item>
-          </one-of>
 
-          <one-of>
-            <item>o que 
+  <rule id="openfolder">
+    <one-of>
+      <item>
+        <one-of>
+          <item>quero ver</item>
+          <item>abre</item>
+        </one-of>
+
+        <one-of>
+          <item>
+            o que
+            <one-of>
+              <item>saquei</item>
+              <item>baixei</item>
+            </one-of>
+            <tag>out ="OPEN_DOWNLOADS"</tag>
+          </item>
+
+          <item>
+            a minha coleção <tag>out = "OPEN_FOLDER"</tag>
+            <item repeat ="0-1">
               <one-of>
-                <item>saquei</item>
-                <item>baixei</item>
+                <item>
+                  de videos <tag>out = "OPEN_FOLDER"</tag>
+                </item>
+                <item>
+                  de downloads <tag>out ="OPEN_DOWNLOADS</tag>
+                </item>
               </one-of>
-              <tag>out ="OPEN_DOWNLOADS"</tag></item>
-            
-            <item>a minha coleção <tag>out = "OPEN_FOLDER"</tag>
-              <item repeat ="0-1">
-                <one-of>
-                  <item>de videos <tag>out = "OPEN_FOLDER"</tag></item>
-                  <item>de downloads <tag>out ="OPEN_DOWNLOADS</tag></item>
-                </one-of>
+            </item>
+          </item>
+          <item>
+            a pasta
+            <one-of>
+              <item>
+                de videos <tag>out = "OPEN_FOLDER"</tag>
               </item>
-            </item>
-            <item>a pasta
-              <one-of>
-                <item>de videos <tag>out = "OPEN_FOLDER"</tag></item>
-                <item>com videos <tag>out = "OPEN_FOLDER"</tag></item>
-                <item>dos meus videos<tag>out = "OPEN_FOLDER"</tag></item>
-                <item>de downloads<tag>out = "OPEN_DOWNLOADS"</tag></item>
-                <item>a pirataria <tag>out = "OPEN_DOWNLOADS"</tag></item>
-              </one-of>
-            </item>
-            <item> as minhas escolhas<tag>out = "OPEN_FOLDER"</tag></item>
-          </one-of>
-          
-        </item>
-      </one-of>
+              <item>
+                com videos <tag>out = "OPEN_FOLDER"</tag>
+              </item>
+              <item>
+                dos meus videos<tag>out = "OPEN_FOLDER"</tag>
+              </item>
+              <item>
+                de downloads<tag>out = "OPEN_DOWNLOADS"</tag>
+              </item>
+              <item>
+                a pirataria <tag>out = "OPEN_DOWNLOADS"</tag>
+              </item>
+            </one-of>
+          </item>
+          <item>
+            as minhas escolhas<tag>out = "OPEN_FOLDER"</tag>
+          </item>
+        </one-of>
+
+      </item>
+    </one-of>
   </rule>
-  
+
   <rule id="confirmation">
     <one-of>
       <item>
@@ -200,7 +228,7 @@
       </item>
     </one-of>
   </rule>
-  
+
   <rule id="play">
     <one-of>
       <item>começa</item>
@@ -214,10 +242,12 @@
     <one-of>
       <item>
         <one-of>
-          <item>já vi
+          <item>
+            já vi
             <one-of>
               <item>isto</item>
-              <item>esta
+              <item>
+                esta
                 <one-of>
                   <item>cena</item>
                   <item>parte</item>
@@ -225,7 +255,8 @@
               </item>
             </one-of>
           </item>
-          <item>quero
+          <item>
+            quero
             <one-of>
               <item>avançar</item>
               <item>passar à frente</item>
@@ -237,7 +268,8 @@
 
       <item>
         <one-of>
-          <item>não
+          <item>
+            não
             <one-of>
               <item>entendi</item>
               <item>percebi</item>
@@ -283,7 +315,7 @@
       </item>
     </one-of>
   </rule>
-  
+
   <rule id="forback">
     <one-of>
       <item>
@@ -327,7 +359,7 @@
     </one-of>
     <tag>out="VOLUME_ON"</tag>
   </rule>
-  
+
   <rule id="volume">
     <one-of>
       <item>
@@ -340,7 +372,7 @@
           <item>o som</item>
           <item>o volume</item>
         </one-of>
-        
+
         <tag>out="VOLUME_UP"</tag>
       </item>
 
@@ -353,49 +385,49 @@
         <one-of>
           <item>o som</item>
           <item>o volume</item>
-        </one-of> 
+        </one-of>
         <tag>out="VOLUME_DOWN"</tag>
       </item>
 
       <item>
         mete mais
-          <one-of>
-            <item>
-              alto  <tag>out="VOLUME_UP"</tag>
-            </item>
-            <item>
-              baixo  <tag>out="VOLUME_DOWN"</tag>
-            </item>
-          </one-of>
+        <one-of>
+          <item>
+            alto  <tag>out="VOLUME_UP"</tag>
+          </item>
+          <item>
+            baixo  <tag>out="VOLUME_DOWN"</tag>
+          </item>
+        </one-of>
       </item>
 
     </one-of>
   </rule>
 
   <rule id="pause">
-      <item>
-        <item repeat="0-1">
-          mete 
-            <item repeat="0-1">em</item>
-        </item>
-        pausa
-
-        <item repeat="0-1">
-          <one-of>
-            <item>no</item>
-            <item>o</item>
-          </one-of>
-        </item>
-
-        <item repeat="0-1">
-          <one-of>
-            
-            <item>vídeo</item>
-            <item>episódio</item>
-            <item>filme</item>
-          </one-of>
-        </item>
+    <item>
+      <item repeat="0-1">
+        mete
+        <item repeat="0-1">em</item>
       </item>
+      pausa
+
+      <item repeat="0-1">
+        <one-of>
+          <item>no</item>
+          <item>o</item>
+        </one-of>
+      </item>
+
+      <item repeat="0-1">
+        <one-of>
+
+          <item>vídeo</item>
+          <item>episódio</item>
+          <item>filme</item>
+        </one-of>
+      </item>
+    </item>
 
     <tag>out="PAUSE"</tag>
   </rule>
@@ -419,7 +451,7 @@
               </one-of>
             </item>
           </item>
-          
+
         </one-of>
       </item>
       <item>tira a pausa</item>
@@ -451,20 +483,20 @@
       <item>até amanhã</item>
       <item>
         tenho de
-          <one-of>
-            <item>
-              <item repeat="0-1">me</item>
-              ir embora 
-            </item>
-            <item>bazar</item>
-          </one-of>
+        <one-of>
+          <item>
+            <item repeat="0-1">me</item>
+            ir embora
+          </item>
+          <item>bazar</item>
+        </one-of>
       </item>
     </one-of>
     <tag>out="EXIT"</tag>
-  </rule> 
+  </rule>
 
   <rule id="fullscreen">
-    
+
     <item>mete</item>
 
     <one-of>
@@ -478,7 +510,7 @@
               <item>grande</item>
               <item>maior</item>
             </one-of>
-             
+
             <tag>out="FULLSCREEN_MAX"</tag>
           </item>
           <item>

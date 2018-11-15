@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using mmisharp;
 using Microsoft.Speech.Recognition;
 
 using System.Net;
 using System.Net.Sockets;
-
-
 
 namespace speechModality
 {
@@ -31,9 +30,18 @@ namespace speechModality
         private NetworkStream stream;
         private Socket client_sock=null;
         private Tts lena;
+        private MediaPlayer ring;
 
         public SpeechMod()
         {
+            string sound_path = System.IO.Directory.GetCurrentDirectory()+ @"\msg_sound.wav";
+
+            ring = new MediaPlayer();
+            ring.Open(new Uri(sound_path));
+            ring.Volume = 0.10;
+
+            
+
             lena = new Tts();
             //lena.Speak("Bom dia. Eu sou a Lena.");
             //iniciate connection to socket
@@ -87,6 +95,7 @@ namespace speechModality
                     //Send data to server
                     if (!msg.Equals("")){
                         Console.WriteLine("Sending: "+msg);
+
                         trySend_msg(msg);
                     }
                 }
@@ -108,7 +117,6 @@ namespace speechModality
             return json;
         }
 
-
         private bool waitingConfirmation = false;
         private string msgToSend = null;
 
@@ -118,11 +126,12 @@ namespace speechModality
 
             foreach (string t in tags)
             {
-                if (t.Equals("EXIT")){
+                if (messageNeedConfirmation(t))
+                {
                     msgToSend = makeMSG(tags);
                     waitingConfirmation = true;
                     Console.WriteLine("\n\nWaiting confirmation: ");
-                    lena.Speak("Tem a certeza que quer desligar o VLC?");
+                    
                 }
                 else if(t.Equals("YES"))
                 {
@@ -151,6 +160,30 @@ namespace speechModality
                 return makeMSG(tags);
             }
         }
+
+        private bool messageNeedConfirmation(string tag)
+        {
+
+            if (tag.Equals("EXIT"))
+            {
+                lena.Speak("Tem a certeza que quer desligar o VLC?");
+                return true;
+            }
+            else if (tag.Equals("DELETE_FILE"))
+            {
+                lena.Speak("Tem a certeza que quer apagar o video?");
+                return true;
+            }
+            else
+                return false;
+        }
+
+        private void ringSound()
+        {
+            ring.Stop();
+            ring.Play();
+        }
+
 
         private bool checkSocket()
         {
@@ -200,8 +233,9 @@ namespace speechModality
 
                     stream = client.GetStream(); //Opens up the network stream
                     stream.Write(sendData, 0, sendData.Length); //Transmits data onto the stream
+
                     result = true;
-                    lena.Speak("Mensagem Enviada");
+                    ringSound();
                 }
             }
             catch
