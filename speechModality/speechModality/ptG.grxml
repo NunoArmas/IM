@@ -31,8 +31,6 @@
 	  </one-of>
 	</rule>
 
-
-
   <rule id="action">
     <one-of>
 
@@ -118,29 +116,42 @@
   </rule>
   
   <rule id="openfolder">
-    <one-of>
-      <item>
-        <one-of>
-          <item>quero ver</item>
-          <item>abre</item>
-        </one-of>
+          <one-of>
+        <item>
+          <one-of>
+            <item>quero ver</item>
+            <item>abre</item>
+          </one-of>
 
-        <one-of>
-          <item>a minha coleção
-            <item repeat ="0-1">de videos</item>
-          </item>
-          <item>a pasta
-            <one-of>
-              <item>de videos</item>
-              <item>com videos</item>
-              <item>dos meus videos</item>
-            </one-of>
-          </item>
-          <item> as minhas escolhas</item>
-        </one-of>
-      </item>
-    </one-of>
-    <tag>out = "OPEN_FOLDER"</tag>
+          <one-of>
+            <item>o que 
+              <one-of>
+                <item>saquei</item>
+                <item>baixei</item>
+              </one-of>
+              <tag>out ="OPEN_DOWNLOADS"</tag></item>
+            
+            <item>a minha coleção <tag>out = "OPEN_FOLDER"</tag>
+              <item repeat ="0-1">
+                <one-of>
+                  <item>de videos <tag>out = "OPEN_FOLDER"</tag></item>
+                  <item>de downloads <tag>out ="OPEN_DOWNLOADS</tag></item>
+                </one-of>
+              </item>
+            </item>
+            <item>a pasta
+              <one-of>
+                <item>de videos <tag>out = "OPEN_FOLDER"</tag></item>
+                <item>com videos <tag>out = "OPEN_FOLDER"</tag></item>
+                <item>dos meus videos<tag>out = "OPEN_FOLDER"</tag></item>
+                <item>de downloads<tag>out = "OPEN_DOWNLOADS"</tag></item>
+                <item>a pirataria <tag>out = "OPEN_DOWNLOADS"</tag></item>
+              </one-of>
+            </item>
+            <item> as minhas escolhas<tag>out = "OPEN_FOLDER"</tag></item>
+          </one-of>
+        </item>
+      </one-of>
   </rule>
   
   <rule id="confirmation">
