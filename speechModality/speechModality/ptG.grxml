@@ -3,32 +3,46 @@
 	
   
   <rule id="rootRule" scope="public">
-    Lena
+    <one-of>
+      <item>
+        Lena
 
-	  <one-of>
-      <item>
-        <ruleref uri="#action"/>
-          <tag>out.action=rules.action;</tag>   
-      </item>
-      <item>
-        <ruleref uri="#volume"/>
-        <tag>out.volume = rules.latest()</tag>
-        <item repeat="0-1">
-          <ruleref uri="#numbers"/>
-          <item repeat="0-1">porcento</item>
-          <tag>out.numbers = rules.latest()</tag>
-        </item>
-      </item>
+        <one-of>
+
+          <item>
+            <ruleref uri="#action"/>
+            <tag>out.action=rules.action;</tag>
+          </item>
+
+          <item>
+            <ruleref uri="#volume"/>
+            <tag>out.volume = rules.latest()</tag>
+            <item repeat="0-1">
+              <ruleref uri="#numbers"/>
+              <item repeat="0-1">porcento</item>
+              <tag>out.numbers = rules.latest()</tag>
+            </item>
+          </item>
+
+          <item>
+            <ruleref uri="#forback"/>
+            <tag>out.forback = rules.latest()</tag>
+            <ruleref uri ="#numbers"/>
+            <tag>out.numbers = rules.latest()</tag>
+            <ruleref uri ="#units"/>
+            <tag>out.units = rules.latest()</tag>
+          </item>
+
+        </one-of>
       
-      <item>
-        <ruleref uri="#forback"/>
-        <tag>out.forback = rules.latest()</tag>
-        <ruleref uri ="#numbers"/>
-        <tag>out.numbers = rules.latest()</tag>
-        <ruleref uri ="#units"/>
-        <tag>out.units = rules.latest()</tag>
       </item>
-	  </one-of>
+    
+    
+      <item>
+        <ruleref uri="#confirmation"/>
+        <tag>out.confirmation = rules.latest()</tag>
+      </item>
+    </one-of>
 	</rule>
 
   <rule id="action">
@@ -65,21 +79,27 @@
       <item>
         <ruleref uri="#forwardbackward"/>
       </item>
+
       <item>
         <ruleref uri ="#unpause"/>
       </item>
+
       <item>
         <ruleref uri="#confirmation"/>
       </item>
+
       <item>
         <ruleref uri="#openfolder"/>
       </item>
+
       <item>
         <ruleref uri="#openrandom"/>
       </item>
+
       <item>
         <ruleref uri="#delete_file"/>
       </item>
+      
     </one-of>
   </rule>
 
@@ -111,12 +131,18 @@
           <item>qualquer coisa</item>
         </one-of>
       </item>
+      <item>escolhe um video
+        <one-of>
+          <item>ao calhas</item>
+          <item>a sorte</item>
+        </one-of>
+      </item>
     </one-of>
     <tag>out = "OPEN_RANDOM"</tag>
   </rule>
   
   <rule id="openfolder">
-          <one-of>
+      <one-of>
         <item>
           <one-of>
             <item>quero ver</item>
@@ -150,6 +176,7 @@
             </item>
             <item> as minhas escolhas<tag>out = "OPEN_FOLDER"</tag></item>
           </one-of>
+          
         </item>
       </one-of>
   </rule>

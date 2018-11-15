@@ -84,8 +84,6 @@ namespace speechModality
 
                 if (msg != null)
                 {
-                    Console.WriteLine("\n\nConfirmed!!");
-
                     //Send data to server
                     if (!msg.Equals("")){
                         Console.WriteLine("Sending: "+msg);
@@ -116,23 +114,29 @@ namespace speechModality
 
         private string needsConfirmation(string[] tags)
         {
-            Console.WriteLine("\n\nConfirmation: ");
+            
 
             foreach (string t in tags)
             {
                 if (t.Equals("EXIT")){
                     msgToSend = makeMSG(tags);
                     waitingConfirmation = true;
-                    return null;
+                    Console.WriteLine("\n\nWaiting confirmation: ");
+                    lena.Speak("Tem a certeza que quer desligar o VLC?");
                 }
                 else if(t.Equals("YES"))
                 {
+                    Console.WriteLine("\n\nConfirmed: ");
                     waitingConfirmation = false;
-                    return msgToSend;
+                    string tmp = msgToSend;
+                    msgToSend = null;
+                    return tmp;
                 }
                 else if (t.Equals("NO"))
                 {
+                    Console.WriteLine("\n\nConfirmed: ");
                     waitingConfirmation = false;
+                    msgToSend = null;
                     return "";
                 }
             }
@@ -143,6 +147,7 @@ namespace speechModality
             }
             else
             {
+                msgToSend = null;
                 return makeMSG(tags);
             }
         }
