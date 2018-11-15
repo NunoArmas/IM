@@ -188,8 +188,12 @@ class Player(wx.Frame):
             dirname = dlg.GetDirectory()
             filename = dlg.GetFilename()
             dlg.Destroy()
+
+            self.playFile(dirname,filename)
+
             return(dirname,filename)
         else:
+            
             dlg.Destroy()
             return None
 
