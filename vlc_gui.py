@@ -96,13 +96,15 @@ class Player(wx.Frame):
         # self.Bind(wx.EVT_TIMER, self.OnTimer, self.timer)
         # self.timer.Start()
 
+        self.Bind(wx.EVT_CHAR_HOOK, self.onKeyPress)
+
         # VLC player controls
         self.Instance = vlc.Instance()
         self.player = self.Instance.media_player_new()
         self.title=None
 
         # Server Thread
-        self.thread = threading.Thread(target=self.serverConn)
+        self.thread = threading.Thread(target=self.serverConn, daemon=True)
         self.thread.start()
 
         # Create video folder
@@ -127,14 +129,18 @@ class Player(wx.Frame):
             self.fullscreenVLC(True)
         elif command == "FULLSCREEN_MIN":
             self.fullscreenVLC(False)
-        elif command == "VOLUME_UP":
+        elif command == "VOLUME_SET":
             self.setVolumeVLC(command_list[1:])
+        elif command == "VOLUME_UP":
+            self.changeVolumeVLC(command_list[1:])
         elif command == "VOLUME_DOWN":
-            self.setVolumeVLC(command_list[1:],False)
+            self.changeVolumeVLC(command_list[1:],False)
         elif command == "VOLUME_ON":
             self.muteVLC(False)
         elif command == "VOLUME_OFF":
             self.muteVLC(True)
+        elif command == "SET_TIME":
+            self.setTimeVLC(command_list[1:])
         elif command == "FORWARD_VAL":
             self.forwardVLC(command_list[1:])
         elif command == "BACKWARD_VAL":
@@ -231,7 +237,7 @@ class Player(wx.Frame):
     def playVLC(self):
         self.player.play()
 
-    def setVolumeVLC(self,volume=[],direction=True):
+    def changeVolumeVLC(self,volume=[],direction=True):
         if volume == []:
             volume=5
         else:
@@ -256,9 +262,53 @@ class Player(wx.Frame):
         if self.player.audio_set_volume(final_volume) == -1:
             print("Failed to set volume") 
 
+        self.muteVLC(False)
+
+    def setVolumeVLC(self,volume=[]):
+        if volume == []:
+            volume=20
+        else:
+            volume = int(volume[0])
+
+        volume *=2
+
+        if volume<0:
+            volume=0
+        elif volume>200:
+            volume=200 
+
+        if self.player.audio_set_volume(volume) == -1:
+            print("Failed to set volume") 
+
     def muteVLC(self, mute=True):
        self.player.audio_set_mute(mute)
     
+    def setTimeVLC(self,lista):
+        time={}
+        for i in range(len(lista)-1):
+            try:
+                value = int(lista[i+1])
+                time[lista[i]] = value
+            except:
+                pass 
+
+        set_time = 0
+        for key in list(time.keys()):
+            if key=='SECONDS':
+                set_time+=int(time[key])*1000
+            elif key=='MINUTES':
+                set_time+=int(time[key])*60000
+            elif key=='HOURS':
+                set_time+=int(time[key])*60000*60
+
+        if set_time<0:
+            set_time=0
+        elif set_time>self.player.get_length():
+            set_time=self.player.get_length()-1000
+
+        self.player.set_time(set_time) 
+
+
     def forwardVLC(self,lista,direction=True):
         time={}
         for i in range(len(lista)):
@@ -329,7 +379,11 @@ class Player(wx.Frame):
 
 
 
-
+    def onKeyPress(self,evt):
+        keycode = evt.GetKeyCode()
+        
+        if keycode == 27:
+           self.fullscreenVLC(False)
 
 
     def OnExit(self, evt):

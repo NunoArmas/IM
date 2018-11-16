@@ -31,6 +31,29 @@
             <tag>out.numbers = rules.latest()</tag>
             <ruleref uri ="#units"/>
             <tag>out.units = rules.latest()</tag>
+            
+          </item>
+          
+          <item>
+            <ruleref uri ="#setVolume"/>
+            <tag>out.setVolume = rules.latest()</tag>
+            
+            <ruleref uri ="#numbers"/>
+            <tag>out.numbers = rules.latest()</tag>
+            
+            <item repeat="0-1">
+              porcento
+            </item>
+          </item>
+
+          <item>
+            <ruleref uri="#setTime"/>
+            <tag>out.setTime = rules.latest()</tag>
+            <ruleref uri ="#units"/>
+             <tag>out.units = rules.latest()</tag>
+            <ruleref uri ="#numbers"/>
+            <tag>out.numbers = rules.latest()</tag>
+            <item></item>
           </item>
 
         </one-of>
@@ -129,7 +152,14 @@
   <rule id="openrandom">
     <one-of>
       <item>surpreende-me</item>
-      <item>mostra-me um video</item>
+      <item>
+        <one-of>
+          <item>mostra-me</item>
+          <item>mete</item>
+        </one-of>
+          um video
+          <item repeat="0-1"> qualquer</item>
+      </item>
       <item>
         quero ver
         <one-of>
@@ -241,34 +271,36 @@
   <rule id="forwardbackward">
 
     <one-of>
+      
       <item>
-
         <one-of>
-          <item>
-            já vi
-            <one-of>
-              <item>isto</item>
-              <item>
-                esta
-                <one-of>
-                  <item>cena</item>
-                  <item>parte</item>
-                </one-of>
-              </item>
-            </one-of>
-          </item>
+            <item>
+              já vi
+              <one-of>
+                <item>isto</item>
+                <item>
+                  esta
+                  <one-of>
+                    <item>cena</item>
+                    <item>parte</item>
+                  </one-of>
+                </item>
+              </one-of>
+            </item>
 
-          <item>
-            quero
-            <one-of>
-              <item>avançar</item>
-              <item>passar à frente</item>
-            </one-of>
-          </item>
-          <item>avança</item>
-          <item>anda 
-            <item repeat="0-1">mais</item>
-          para a frente</item>
+            <item>
+              quero
+              <one-of>
+                <item>avançar</item>
+                <item>passar à frente</item>
+              </one-of>
+            </item>
+          
+            <item>avança</item>
+              <item>anda 
+                <item repeat="0-1">mais</item>
+                  para a frente
+              </item>
         </one-of>
 
         <tag>out="FORWARD"</tag>
@@ -295,7 +327,16 @@
         </one-of>
         <tag>out="BACKWARD"</tag>
       </item>
+    
     </one-of>
+  </rule>
+  
+  <rule id="setTime">
+    <one-of>
+      <item>avança para o</item>
+      <item>mete no</item>
+    </one-of>
+    <tag>out = "SET_TIME"</tag>
   </rule>
 
   <rule id="units">
@@ -321,6 +362,7 @@
         </one-of>
         <tag>out = "HOURS"</tag>
       </item>
+  
     </one-of>
   </rule>
 
@@ -346,6 +388,18 @@
       </item>
     </one-of>
   </rule>
+  
+  <rule id="setVolume">
+    <one-of>
+      <item>mete 
+        <one-of>
+          <item>o som a</item>
+          <item>o volume a</item>
+        </one-of>
+      </item>
+    </one-of>
+    <tag>out = "VOLUME_SET"</tag>
+  </rule>
 
   <rule id="volumeMute">
     <one-of>
@@ -354,6 +408,7 @@
       <item>pouco barulho</item>
       <item>cheee</item>
       <item>shiu</item>
+      <item>tira o som</item>
     </one-of>
     <tag>out="VOLUME_OFF"</tag>
   </rule>
@@ -414,11 +469,16 @@
 
   <rule id="pause">
     <item>
-      <item repeat="0-1">
-        mete
-        <item repeat="0-1">em</item>
-      </item>
-      pausa
+
+      <one-of>
+        <item>
+          mete
+          <item repeat="0-1">em</item>
+        </item>
+        <item>faz</item>
+      </one-of>
+        pausa
+      
 
       <item repeat="0-1">
         <one-of>
@@ -1449,4 +1509,5 @@
       </item>
     </one-of>
   </rule>
+
 </grammar>
