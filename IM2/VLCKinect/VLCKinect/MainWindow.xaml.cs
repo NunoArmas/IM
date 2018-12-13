@@ -18,6 +18,9 @@ using Microsoft.Kinect;
 using System.ComponentModel;
 using System.Timers;
 
+using System.Net;
+using System.Net.Sockets;
+
 namespace VLCKinect
 {
     /// <summary>
@@ -41,7 +44,12 @@ namespace VLCKinect
         VisualGestureBuilderDatabase db;
 
 
-        System.Timers.Timer timer;
+        private TcpClient client;
+        private NetworkStream stream;
+        private Socket client_sock = null;
+
+
+        System.Timers.Timer timer,connectSock;
         Boolean canReadDiscrete = true;
         int counter = 1;
 
@@ -233,10 +241,111 @@ namespace VLCKinect
             timer.Enabled = true;
         }
 
+        void SetSocketTimer()
+        {
+            connectSock = new System.Timers.Timer(1000);
+
+            connectSock.Elapsed += OnConnectEvent;
+            connectSock.AutoReset = true;
+            connectSock.Enabled = true;
+        }
+
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
             canReadDiscrete = true;
             timer.Stop();
+        }
+
+        private void OnConnectEvent(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+
+                if (!checkSocket())
+                {
+                    connectSocket();
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Failed to connect");
+            }
+
+            timer.Start();
+        }
+
+        private string makeMSG(string[] tags)
+        {
+            string json = "{ \"recognized\": [";
+            foreach (string t in tags)
+            {
+                json += "\"" + t + "\", ";
+
+            }
+            json = json.Substring(0, json.Length - 2);
+            json += "] }";
+
+            return json;
+        }
+
+        private bool checkSocket()
+        {
+            bool result = true;
+
+            return client != null && client_sock.Connected;
+
+        }
+
+        private void connectSocket()
+        {
+            try
+            {
+                client = new TcpClient("localhost", 8081);
+                client_sock = client.Client;
+
+            }
+            catch
+            {
+                Console.WriteLine("Connection Failed");
+                if (client != null)
+                {
+                    client.Close();
+                }
+                client = null;
+            }
+        }
+
+        private bool trySend_msg(string message)
+        {
+            bool result = false;
+            try
+            {
+
+                if (!checkSocket())
+                {
+                    connectSocket();
+                    result = false;
+                }
+                else
+                {
+                    int byteCount = Encoding.ASCII.GetByteCount(message);
+                    byte[] sendData = new byte[byteCount];
+                    sendData = Encoding.ASCII.GetBytes(message);
+
+                    stream = client.GetStream(); //Opens up the network stream
+                    stream.Write(sendData, 0, sendData.Length); //Transmits data onto the stream
+
+                    result = true;
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Connection not installised");
+                Console.WriteLine("Failed to send data");
+                result = false;
+            }
+
+            return result;
         }
     }
 }
