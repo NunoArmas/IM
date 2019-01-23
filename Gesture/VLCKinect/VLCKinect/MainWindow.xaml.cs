@@ -67,7 +67,7 @@ namespace VLCKinect
             
 
             //init LifeCycleEvents..
-            lce = new LifeCycleEvents("ASR", "FUSION", "gesture-1", "gesture", "command"); // LifeCycleEvents(string source, string target, string id, string medium, string mode)
+            lce = new LifeCycleEvents("KINECT", "FUSION", "gesture-1", "gesture", "command"); // LifeCycleEvents(string source, string target, string id, string medium, string mode)
             //mmic = new MmiCommunication("localhost",9876,"User1", "ASR");  //PORT TO FUSION - uncomment this line to work with fusion later
             mmic = new MmiCommunication("localhost", 8000, "User2", "ASR"); // MmiCommunication(string IMhost, int portIM, string UserOD, string thisModalityName)
 
