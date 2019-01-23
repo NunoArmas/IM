@@ -21,6 +21,9 @@ using System.Timers;
 using System.Net;
 using System.Net.Sockets;
 
+using mmisharp;
+
+
 namespace VLCKinect
 {
     /// <summary>
@@ -55,19 +58,24 @@ namespace VLCKinect
         int counter = 1;
         private MediaPlayer ring;
 
+
+        private LifeCycleEvents lce;
+        private MmiCommunication mmic;
+
         public MainWindow()
         {
-            string sound_path = System.IO.Directory.GetCurrentDirectory() + @"\msg_sound.wav";
+            
 
-            ring = new MediaPlayer();
-            ring.Open(new Uri(sound_path));
-            ring.Volume = 0.05;
+            //init LifeCycleEvents..
+            lce = new LifeCycleEvents("ASR", "FUSION", "gesture-1", "gesture", "command"); // LifeCycleEvents(string source, string target, string id, string medium, string mode)
+            //mmic = new MmiCommunication("localhost",9876,"User1", "ASR");  //PORT TO FUSION - uncomment this line to work with fusion later
+            mmic = new MmiCommunication("localhost", 8000, "User2", "ASR"); // MmiCommunication(string IMhost, int portIM, string UserOD, string thisModalityName)
+
+            mmic.Send(lce.NewContextRequest());
 
             //this.kinect.IsAvailableChanged += this.Sensor_IsAvailableChanged;
             OnOpenSensor();
             InitializeComponent();
-            SetTimer();
-            SetSocketTimer();
             OnLoadGestureFromDBd();
             OnOpenReaders();
 
@@ -221,6 +229,7 @@ namespace VLCKinect
                                 
                                 if(result != null)
                                 {
+                                    int confidence =(int) result.Confidence;
                                     if (gesture.Name.Equals("backward") && (result.Confidence >= CONFIDENCE))
                                     {
                                         Console.WriteLine("backward " + result.Detected + " Gesture Confidence:" + result.Confidence);
@@ -229,7 +238,7 @@ namespace VLCKinect
                                         timer.Start();
 
                                         message = makeMSG(new string[]{"BACKWARD"});
-                                        trySend_msg(message);
+                                        trySend_msg(message, confidence);
                                     }
 
                                     if (gesture.Name.Equals("forward") && (result.Confidence >= CONFIDENCE))
@@ -240,7 +249,8 @@ namespace VLCKinect
                                         timer.Start();
 
                                         message = makeMSG(new string[] { "FORWARD" });
-                                        trySend_msg(message);
+                                        trySend_msg(message, confidence);
+
                                     }
 
                                     if (gesture.Name.Equals("fullscreenOFF") && (result.Confidence >= CONFIDENCE))
@@ -251,7 +261,8 @@ namespace VLCKinect
                                         timer.Start();
 
                                         message = makeMSG(new string[] { "FULLSCREEN_MIN" });
-                                        trySend_msg(message);
+                                        trySend_msg(message, confidence);
+                                        
                                     }
 
                                     if (gesture.Name.Equals("fullscreenON") && (result.Confidence >= CONFIDENCE))
@@ -262,7 +273,8 @@ namespace VLCKinect
                                         timer.Start();
 
                                         message = makeMSG(new string[] { "FULLSCREEN_MAX" });
-                                        trySend_msg(message);
+                                        trySend_msg(message, confidence);
+
                                     }
 
                                     if (gesture.Name.Equals("Pause") && (result.Confidence >= CONFIDENCE))
@@ -273,7 +285,8 @@ namespace VLCKinect
                                         timer.Start();
 
                                         message = makeMSG(new string[] { "PAUSE" });
-                                        trySend_msg(message);
+                                        trySend_msg(message, confidence);
+
                                     }
 
                                     if (gesture.Name.Equals("play") && (result.Confidence >= CONFIDENCE))
@@ -284,7 +297,8 @@ namespace VLCKinect
                                         timer.Start();
 
                                         message = makeMSG(new string[] { "PLAY" });
-                                        trySend_msg(message);
+                                        trySend_msg(message, confidence);
+
                                     }
 
                                     if (gesture.Name.Equals("stop") && (result.Confidence >= CONFIDENCE))
@@ -295,7 +309,8 @@ namespace VLCKinect
                                         timer.Start();
 
                                         message = makeMSG(new string[] { "STOP" });
-                                        trySend_msg(message);
+                                        trySend_msg(message, confidence);
+
                                     }
 
                                     if (gesture.Name.Equals("volumeDOWN") && (result.Confidence >= CONFIDENCE))
@@ -306,10 +321,11 @@ namespace VLCKinect
                                         timer.Start();
 
                                         message = makeMSG(new string[] { "VOLUME_DOWN" });
-                                        trySend_msg(message);
+                                        trySend_msg(message, confidence);
+
                                     }
 
-                                    if(gesture.Name.Equals("volumeUP") && (result.Confidence >= CONFIDENCE))
+                                    if (gesture.Name.Equals("volumeUP") && (result.Confidence >= CONFIDENCE))
                                     {
                                         Console.WriteLine("volumeUP " + result.Detected + " Gesture Confidence:" + result.Confidence);
                                         counter++;
@@ -317,7 +333,8 @@ namespace VLCKinect
                                         timer.Start();
 
                                         message = makeMSG(new string[] { "VOLUME_UP" });
-                                        trySend_msg(message);
+                                        trySend_msg(message, confidence);
+
                                     }
                                 }
                             }
@@ -337,15 +354,6 @@ namespace VLCKinect
             timer.Elapsed += OnTimedEvent;
             timer.AutoReset = false;
             timer.Enabled = true;
-        }
-
-        void SetSocketTimer()
-        {
-            connectSock = new System.Timers.Timer(1000);
-
-            connectSock.Elapsed += OnConnectEvent;
-            connectSock.AutoReset = false;
-            connectSock.Enabled = true;
         }
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
@@ -385,72 +393,10 @@ namespace VLCKinect
             return json;
         }
 
-        private bool checkSocket()
+        private void trySend_msg(string msg, int confidence)
         {
-            bool result = true;
-
-            return client != null && client_sock.Connected;
-
-        }
-
-        private void connectSocket()
-        {
-            try
-            {
-                client = new TcpClient("localhost", 8081);
-                client_sock = client.Client;
-                
-            }
-            catch
-            {
-                Console.WriteLine("Connection Failed");
-                if (client != null)
-                {
-                    client.Close();
-                }
-                client = null;
-            }
-        }
-
-        private bool trySend_msg(string message)
-        {
-            bool result = false;
-            try
-            {
-
-                if (!checkSocket())
-                {
-                    connectSocket();
-                    result = false;
-                }
-                else
-                {
-                    int byteCount = Encoding.ASCII.GetByteCount(message);
-                    byte[] sendData = new byte[byteCount];
-                    sendData = Encoding.ASCII.GetBytes(message);
-
-                    stream = client.GetStream(); //Opens up the network stream
-                    stream.Write(sendData, 0, sendData.Length); //Transmits data onto the stream
-
-                    result = true;
-                    ringSound();
-
-                }
-            }
-            catch
-            {
-                Console.WriteLine("Connection not installised");
-                Console.WriteLine("Failed to send data");
-                result = false;
-            }
-
-            return result;
-        }
-
-        private void ringSound()
-        {
-            ring.Stop();
-            ring.Play();
+            var exNot = lce.ExtensionNotification(0 + "", 0 + "", confidence , msg);
+            mmic.Send(exNot);
         }
     }
 }

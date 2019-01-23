@@ -101,14 +101,13 @@ namespace speechModality
                 if (msg != null)
                 {
 
-                    var exNot = lce.ExtensionNotification(e.Result.Audio.StartTime + "", e.Result.Audio.StartTime.Add(e.Result.Audio.Duration) + "", e.Result.Confidence, msg);
-                    mmic.Send(exNot);
 
                     //Send data to server
                     if (!msg.Equals("")){
                         Console.WriteLine("Sending: "+msg);
 
-                        //trySend_msg(msg);
+                        var exNot = lce.ExtensionNotification(e.Result.Audio.StartTime + "", e.Result.Audio.StartTime.Add(e.Result.Audio.Duration) + "", e.Result.Confidence, msg);
+                        mmic.Send(exNot);
                     }
                 }
             }
