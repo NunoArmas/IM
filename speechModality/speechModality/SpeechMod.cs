@@ -32,6 +32,9 @@ namespace speechModality
         private Tts lena;
         private MediaPlayer ring;
 
+        private LifeCycleEvents lce;
+        private MmiCommunication mmic;
+
         public SpeechMod()
         {
             string sound_path = System.IO.Directory.GetCurrentDirectory()+ @"\msg_sound.wav";
@@ -40,12 +43,17 @@ namespace speechModality
             ring.Open(new Uri(sound_path));
             ring.Volume = 0.10;
 
-            
+            //init LifeCycleEvents..
+            lce = new LifeCycleEvents("ASR", "FUSION", "speech-1", "acoustic", "command"); // LifeCycleEvents(string source, string target, string id, string medium, string mode)
+            //mmic = new MmiCommunication("localhost",9876,"User1", "ASR");  //PORT TO FUSION - uncomment this line to work with fusion later
+            mmic = new MmiCommunication("localhost", 8000, "User1", "ASR"); // MmiCommunication(string IMhost, int portIM, string UserOD, string thisModalityName)
+
+            mmic.Send(lce.NewContextRequest());
+
 
             lena = new Tts();
             //lena.Speak("Bom dia. Eu sou a Lena.");
             //iniciate connection to socket
-            connectSocket();
 
             //load pt recognizer
             sre = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("pt-PT"));
@@ -92,11 +100,15 @@ namespace speechModality
 
                 if (msg != null)
                 {
+
+                    var exNot = lce.ExtensionNotification(e.Result.Audio.StartTime + "", e.Result.Audio.StartTime.Add(e.Result.Audio.Duration) + "", e.Result.Confidence, msg);
+                    mmic.Send(exNot);
+
                     //Send data to server
                     if (!msg.Equals("")){
                         Console.WriteLine("Sending: "+msg);
 
-                        trySend_msg(msg);
+                        //trySend_msg(msg);
                     }
                 }
             }
@@ -178,74 +190,6 @@ namespace speechModality
                 return false;
         }
 
-        private void ringSound()
-        {
-            ring.Stop();
-            ring.Play();
-        }
-
-
-        private bool checkSocket()
-        {
-            bool result = true;
-
-            return client != null && client_sock.Connected;
-            
-        }
-
-        private void connectSocket()
-        {
-            try
-            {
-                client = new TcpClient("localhost", 8081);
-                client_sock = client.Client;
-
-                lena.Speak("Conexão com o servidor bem sucedida.");
-            }
-            catch
-            {
-                Console.WriteLine("Connection Failed");
-                if (client != null)
-                {
-                    client.Close();
-                }
-                client = null;
-            }
-        }
-
-        private bool trySend_msg(string message)
-        {
-            bool result = false;
-            try
-            {
-
-                if (!checkSocket())
-                {
-                    connectSocket();
-                    result = false;
-                    lena.Speak("A mensagem n±ao foi enviada");
-                }
-                else
-                {
-                    int byteCount = Encoding.ASCII.GetByteCount(message);
-                    byte[] sendData = new byte[byteCount];
-                    sendData = Encoding.ASCII.GetBytes(message);
-
-                    stream = client.GetStream(); //Opens up the network stream
-                    stream.Write(sendData, 0, sendData.Length); //Transmits data onto the stream
-
-                    result = true;
-                    ringSound();
-                }
-            }
-            catch
-            {
-                Console.WriteLine("Connection not installised");
-                Console.WriteLine("Failed to send data");
-                result = false;
-            }
-
-            return result;
-        }
+      
     }
 }
