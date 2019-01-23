@@ -56,6 +56,16 @@
             <item></item>
           </item>
 
+          <item>
+            <ruleref uri ="#numbers"/>
+            <tag>out.numbers = rules.latest()</tag>
+            <item repeat="0-1">
+              <one-of>
+                <item>porcento</item>
+                <item>minutos</item>
+              </one-of>
+            </item>
+          </item>
         </one-of>
 
       </item>
