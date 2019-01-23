@@ -1,38 +1,86 @@
 ﻿<?xml version="1.0"?>
 <grammar xml:lang="pt-PT" version="1.0" xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0">
-	
-  
+
+
   <rule id="rootRule" scope="public">
-    Lena
-
-	  <one-of>
+    <one-of>
       <item>
-        <ruleref uri="#action"/>
-          <tag>out.action=rules.action;</tag>   
+        Lena
+
+        <one-of>
+
+          <item>
+            <ruleref uri="#action"/>
+            <tag>out.action=rules.action;</tag>
+          </item>
+
+          <item>
+            <ruleref uri="#volume"/>
+            <tag>out.volume = rules.latest()</tag>
+            <item repeat="0-1">
+              <ruleref uri="#numbers"/>
+              <item repeat="0-1">porcento</item>
+              <tag>out.numbers = rules.latest()</tag>
+            </item>
+          </item>
+
+          <item>
+            <ruleref uri="#forback"/>
+            <tag>out.forback = rules.latest()</tag>
+            <ruleref uri ="#numbers"/>
+            <tag>out.numbers = rules.latest()</tag>
+            <ruleref uri ="#units"/>
+            <tag>out.units = rules.latest()</tag>
+            
+          </item>
+          
+          <item>
+            <ruleref uri ="#setVolume"/>
+            <tag>out.setVolume = rules.latest()</tag>
+            
+            <ruleref uri ="#numbers"/>
+            <tag>out.numbers = rules.latest()</tag>
+            
+            <item repeat="0-1">
+              porcento
+            </item>
+          </item>
+
+          <item>
+            <ruleref uri="#setTime"/>
+            <tag>out.setTime = rules.latest()</tag>
+            <ruleref uri ="#units"/>
+             <tag>out.units = rules.latest()</tag>
+            <ruleref uri ="#numbers"/>
+            <tag>out.numbers = rules.latest()</tag>
+            <item></item>
+          </item>
+
+        </one-of>
+
       </item>
-	  </one-of>
-	</rule>
 
 
+      <item>
+        <ruleref uri="#confirmation"/>
+        <tag>out.confirmation = rules.latest()</tag>
+      </item>
+    </one-of>
+  </rule>
 
   <rule id="action">
     <one-of>
 
       <item>
-       <ruleref uri="#volume"/>
-       <item repeat="0-1">
-            <ruleref uri="#numbers"/>
-          
-            <item repeat="0-1">porcento</item>
-        </item>
+        <ruleref uri="#play"/>
       </item>
 
       <item>
-       <ruleref uri="#pause"/>
+        <ruleref uri="#pause"/>
       </item>
 
       <item>
-       <ruleref uri="#stop"/>
+        <ruleref uri="#stop"/>
       </item>
 
       <item>
@@ -43,22 +91,340 @@
         <ruleref uri="#fullscreen"/>
       </item>
 
+      <item>
+        <ruleref uri="#volumeMute"/>
+      </item>
+
+      <item>
+        <ruleref uri="#volumeON"/>
+      </item>
+
+      <item>
+        <ruleref uri="#forwardbackward"/>
+      </item>
+
+      <item>
+        <ruleref uri ="#unpause"/>
+      </item>
+
+      <item>
+        <ruleref uri="#confirmation"/>
+      </item>
+
+      <item>
+        <ruleref uri="#openfolder"/>
+      </item>
+
+      <item>
+        <ruleref uri="#openrandom"/>
+      </item>
+
+      <item>
+        <ruleref uri="#delete_file"/>
+      </item>
+
     </one-of>
+  </rule>
+
+  <rule id="delete_file">
+    <one-of>
+      <item>
+        apaga
+        <one-of>
+          <item>isto</item>
+          <item>
+            <one-of>
+              <item>este</item>
+              <item>o</item>
+            </one-of>
+
+            <one-of>
+              <item>video</item>
+              <item>ficheiro</item>
+            </one-of>
+          </item>
+        </one-of>
+      </item>
+    </one-of>
+    <tag>out="DELETE_FILE"</tag>
+  </rule>
+
+  <rule id="openrandom">
+    <one-of>
+      <item>surpreende-me</item>
+      <item>
+        <one-of>
+          <item>mostra-me</item>
+          <item>mete</item>
+        </one-of>
+          um video
+          <item repeat="0-1"> qualquer</item>
+      </item>
+      <item>
+        quero ver
+        <one-of>
+          <item>algo</item>
+          <item>um video</item>
+          <item>qualquer coisa</item>
+        </one-of>
+      </item>
+      <item>
+        escolhe um video
+        <one-of>
+          <item>ao calhas</item>
+          <item>a sorte</item>
+        </one-of>
+      </item>
+    </one-of>
+    <tag>out = "OPEN_RANDOM"</tag>
+  </rule>
+
+  <rule id="openfolder">
+    <one-of>
+      <item>
+        <one-of>
+          <item>quero ver</item>
+          <item>abre</item>
+        </one-of>
+
+        <one-of>
+          <item>
+            o que
+            <one-of>
+              <item>saquei</item>
+              <item>baixei</item>
+            </one-of>
+            <tag>out ="OPEN_DOWNLOADS"</tag>
+          </item>
+
+          <item>
+            a minha coleção <tag>out = "OPEN_FOLDER"</tag>
+            <item repeat ="0-1">
+              <one-of>
+                <item>
+                  de videos <tag>out = "OPEN_FOLDER"</tag>
+                </item>
+                <item>
+                  de downloads <tag>out ="OPEN_DOWNLOADS</tag>
+                </item>
+              </one-of>
+            </item>
+          </item>
+          <item>
+            a pasta
+            <one-of>
+              <item>
+                de videos <tag>out = "OPEN_FOLDER"</tag>
+              </item>
+              <item>
+                com videos <tag>out = "OPEN_FOLDER"</tag>
+              </item>
+              <item>
+                dos meus videos<tag>out = "OPEN_FOLDER"</tag>
+              </item>
+              <item>
+                de downloads<tag>out = "OPEN_DOWNLOADS"</tag>
+              </item>
+              <item>
+                a pirataria <tag>out = "OPEN_DOWNLOADS"</tag>
+              </item>
+            </one-of>
+          </item>
+          <item>
+            as minhas escolhas<tag>out = "OPEN_FOLDER"</tag>
+          </item>
+        </one-of>
+
+      </item>
+    </one-of>
+  </rule>
+
+  <rule id="confirmation">
+    <one-of>
+      <item>
+        <one-of>
+          <item>sim</item>
+          <item>confirmo</item>
+        </one-of>
+        <tag>out = "YES"</tag>
+      </item>
+      <item>
+        <one-of>
+          <item>não</item>
+          <item>recuso</item>
+          <item>mudei de ideias</item>
+        </one-of>
+        <tag>out="NO"</tag>
+      </item>
+    </one-of>
+  </rule>
+
+  <rule id="play">
+    <one-of>
+      <item>começa</item>
+      <item>vamos começar</item>
+      <item>inicia</item>
+    </one-of>
+    <tag>out = "PLAY"</tag>
+  </rule>
+
+  <rule id="forwardbackward">
+
+    <one-of>
+      
+      <item>
+        <one-of>
+            <item>
+              já vi
+              <one-of>
+                <item>isto</item>
+                <item>
+                  esta
+                  <one-of>
+                    <item>cena</item>
+                    <item>parte</item>
+                  </one-of>
+                </item>
+              </one-of>
+            </item>
+
+            <item>
+              quero
+              <one-of>
+                <item>avançar</item>
+                <item>passar à frente</item>
+              </one-of>
+            </item>
+          
+            <item>avança</item>
+              <item>anda 
+                <item repeat="0-1">mais</item>
+                  para a frente
+              </item>
+        </one-of>
+
+        <tag>out="FORWARD"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>
+            não
+            <one-of>
+              <item>entendi</item>
+              <item>percebi</item>
+            </one-of>
+            <item repeat ="0-1">
+              <item>
+                esta
+                <one-of>
+                  <item>parte</item>
+                  <item>cena</item>
+                </one-of>
+              </item>
+            </item>
+          </item>
+        </one-of>
+        <tag>out="BACKWARD"</tag>
+      </item>
+    
+    </one-of>
+  </rule>
+  
+  <rule id="setTime">
+    <one-of>
+      <item>avança para o</item>
+      <item>mete no</item>
+    </one-of>
+    <tag>out = "SET_TIME"</tag>
+  </rule>
+
+  <rule id="units">
+    <one-of>
+      <item>
+        <one-of>
+          <item>segundos</item>
+          <item>segundo</item>
+        </one-of>
+        <tag>out = "SECONDS"</tag>
+      </item>
+      <item>
+        <one-of>
+          <item>minutos</item>
+          <item>minuto</item>
+        </one-of>
+        <tag>out = "MINUTES"</tag>
+      </item>
+      <item>
+        <one-of>
+          <item>horas</item>
+          <item>hora</item>
+        </one-of>
+        <tag>out = "HOURS"</tag>
+      </item>
+  
+    </one-of>
+  </rule>
+
+  <rule id="forback">
+    <one-of>
+      <item>
+        <one-of>
+          <item>
+            avança
+          </item>
+          <item>
+            quero avançar
+          </item>
+        </one-of>
+        <tag>out="FORWARD_VAL"</tag>
+      </item>
+      <item>
+        <one-of>
+          <item>Recua</item>
+          <item>quero recuar</item>
+        </one-of>
+        <tag>out="BACKWARD_VAL"</tag>
+      </item>
+    </one-of>
+  </rule>
+  
+  <rule id="setVolume">
+    <one-of>
+      <item>mete 
+        <one-of>
+          <item>o som a</item>
+          <item>o volume a</item>
+        </one-of>
+      </item>
+    </one-of>
+    <tag>out = "VOLUME_SET"</tag>
+  </rule>
+
+  <rule id="volumeMute">
+    <one-of>
+      <item>silêncio</item>
+      <item>cala-te</item>
+      <item>pouco barulho</item>
+      <item>cheee</item>
+      <item>shiu</item>
+      <item>tira o som</item>
+    </one-of>
+    <tag>out="VOLUME_OFF"</tag>
+  </rule>
+
+  <rule id="volumeON">
+    <one-of>
+      <item>Liga o som</item>
+      <item>quero ouvir</item>
+      <item>Não ouço nada.</item>
+      <item>Não consigo ouvir.</item>
+    </one-of>
+    <tag>out="VOLUME_ON"</tag>
   </rule>
 
   <rule id="volume">
     <one-of>
-
-      <item>
-        <one-of>
-          <item>silêncio</item>
-          <item>cala-te</item>
-          <item>pouco barulho</item>
-          <item>chhheee</item>
-        </one-of>
-        <tag>out="VOLUME_MUTE"</tag> 
-      </item>
-
       <item>
         <one-of>
           <item>sobe</item>
@@ -69,7 +435,7 @@
           <item>o som</item>
           <item>o volume</item>
         </one-of>
-        
+
         <tag>out="VOLUME_UP"</tag>
       </item>
 
@@ -82,51 +448,84 @@
         <one-of>
           <item>o som</item>
           <item>o volume</item>
-        </one-of> 
+        </one-of>
         <tag>out="VOLUME_DOWN"</tag>
       </item>
 
       <item>
         mete mais
-          <one-of>
-            <item>
-              alto  <tag>out="VOLUME_UP"</tag>
-            </item>
-            <item>
-              baixo  <tag>out="VOLUME_DOWN"</tag>
-            </item>
-          </one-of>
+        <one-of>
+          <item>
+            alto  <tag>out="VOLUME_UP"</tag>
+          </item>
+          <item>
+            baixo  <tag>out="VOLUME_DOWN"</tag>
+          </item>
+        </one-of>
       </item>
 
     </one-of>
   </rule>
 
   <rule id="pause">
-      <item>
-        <item repeat="0-1">
-          mete 
-            <item repeat="0-1">em</item>
+    <item>
+
+      <one-of>
+        <item>
+          mete
+          <item repeat="0-1">em</item>
         </item>
+        <item>faz</item>
+      </one-of>
         pausa
+      
 
-        <item repeat="0-1">
-          <one-of>
-            <item>no</item>
-            <item>o</item>
-          </one-of>
-        </item>
-
-        <item repeat="0-1">
-          <one-of>
-            
-            <item>vídeo</item>
-            <item>episódio</item>
-            <item>filme</item>
-          </one-of>
-        </item>
+      <item repeat="0-1">
+        <one-of>
+          <item>no</item>
+          <item>o</item>
+        </one-of>
       </item>
 
+      <item repeat="0-1">
+        <one-of>
+
+          <item>vídeo</item>
+          <item>episódio</item>
+          <item>filme</item>
+        </one-of>
+      </item>
+    </item>
+
     <tag>out="PAUSE"</tag>
+  </rule>
+
+  <rule id="unpause">
+    <one-of>
+      <item>já voltei</item>
+      <item>
+        <one-of>
+          <item>
+            <one-of>
+              <item>podemos</item>
+              <item>vamos</item>
+            </one-of>
+            <item>continuar</item>
+            <item repeat="0-1">
+              <item>a</item>
+              <one-of>
+                <item>ver</item>
+                <item>assistir</item>
+              </one-of>
+            </item>
+          </item>
+
+        </one-of>
+      </item>
+      <item>tira a pausa</item>
+      <item>continua</item>
+    </one-of>
+    <tag>out ="UNPAUSE"</tag>
   </rule>
 
   <rule id="stop">
@@ -152,20 +551,20 @@
       <item>até amanhã</item>
       <item>
         tenho de
-          <one-of>
-            <item>
-              <item repeat="0-1">me</item>
-              ir embora 
-            </item>
-            <item>bazar</item>
-          </one-of>
+        <one-of>
+          <item>
+            <item repeat="0-1">me</item>
+            ir embora
+          </item>
+          <item>bazar</item>
+        </one-of>
       </item>
     </one-of>
     <tag>out="EXIT"</tag>
-  </rule> 
+  </rule>
 
   <rule id="fullscreen">
-    
+
     <item>mete</item>
 
     <one-of>
@@ -179,7 +578,7 @@
               <item>grande</item>
               <item>maior</item>
             </one-of>
-             
+
             <tag>out="FULLSCREEN_MAX"</tag>
           </item>
           <item>
@@ -196,11 +595,18 @@
         pequena <tag>out="FULLSCREEN_MIN"</tag>
       </item>
     </one-of>
-
   </rule>
 
   <rule id="numbers">
     <one-of>
+
+      <item>
+        <one-of>
+          <item>0</item>
+          <item>zero</item>
+        </one-of>
+        <tag>out="0"</tag>
+      </item>
 
       <item>
         <one-of>
@@ -215,7 +621,6 @@
         <one-of>
           <item>2</item>
           <item>dois</item>
-          <item>duas</item>
           <item>segundo</item>
         </one-of>
         <tag>out="2"</tag>
@@ -288,11 +693,821 @@
         <one-of>
           <item>10</item>
           <item>dez</item>
-          <item>décimo</item>
+          <item>décimo  </item>
         </one-of>
-        <tag>out="3"</tag>
+        <tag>out="10"</tag>
       </item>
-        
+
+      <item>
+        <one-of>
+          <item>11</item>
+          <item>onze</item>
+          <item>décimo primeiro</item>
+        </one-of>
+        <tag>out="11"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>12</item>
+          <item>doze</item>
+          <item>décimo segundo</item>
+        </one-of>
+        <tag>out="12"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>13</item>
+          <item>treze</item>
+          <item>décimo terceiro</item>
+        </one-of>
+        <tag>out="13"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>14</item>
+          <item>quatorze</item>
+          <item>décimo quarto</item>
+        </one-of>
+        <tag>out="14"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>15</item>
+          <item>quinze</item>
+          <item>décimo quinto</item>
+        </one-of>
+        <tag>out="15"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>16</item>
+          <item>dezesseis</item>
+          <item>décimo sexto</item>
+        </one-of>
+        <tag>out="16"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>17</item>
+          <item>dezessete</item>
+          <item>décimo sétimo</item>
+        </one-of>
+        <tag>out="17"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>18</item>
+          <item>dezoito</item>
+          <item>décimo oitavo</item>
+        </one-of>
+        <tag>out="18"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>19</item>
+          <item>dezenove</item>
+          <item>décimo nono</item>
+        </one-of>
+        <tag>out="19"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>20</item>
+          <item>vinte</item>
+          <item>vigésimo  </item>
+        </one-of>
+        <tag>out="20"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>21</item>
+          <item>vinte e um</item>
+          <item>vigésimo primeiro</item>
+        </one-of>
+        <tag>out="21"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>22</item>
+          <item>vinte e dois</item>
+          <item>vigésimo segundo</item>
+        </one-of>
+        <tag>out="22"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>23</item>
+          <item>vinte e três</item>
+          <item>vigésimo terceiro</item>
+        </one-of>
+        <tag>out="23"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>24</item>
+          <item>vinte e quatro</item>
+          <item>vigésimo quarto</item>
+        </one-of>
+        <tag>out="24"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>25</item>
+          <item>vinte e cinco</item>
+          <item>vigésimo quinto</item>
+        </one-of>
+        <tag>out="25"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>26</item>
+          <item>vinte e seis</item>
+          <item>vigésimo sexto</item>
+        </one-of>
+        <tag>out="26"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>27</item>
+          <item>vinte e sete</item>
+          <item>vigésimo sétimo</item>
+        </one-of>
+        <tag>out="27"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>28</item>
+          <item>vinte e oito</item>
+          <item>vigésimo oitavo</item>
+        </one-of>
+        <tag>out="28"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>29</item>
+          <item>vinte e nove</item>
+          <item>vigésimo nono</item>
+        </one-of>
+        <tag>out="29"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>30</item>
+          <item>trinta</item>
+          <item>trigésimo  </item>
+        </one-of>
+        <tag>out="30"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>31</item>
+          <item>trinta e um</item>
+          <item>trigésimo primeiro</item>
+        </one-of>
+        <tag>out="31"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>32</item>
+          <item>trinta e dois</item>
+          <item>trigésimo segundo</item>
+        </one-of>
+        <tag>out="32"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>33</item>
+          <item>trinta e três</item>
+          <item>trigésimo terceiro</item>
+        </one-of>
+        <tag>out="33"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>34</item>
+          <item>trinta e quatro</item>
+          <item>trigésimo quarto</item>
+        </one-of>
+        <tag>out="34"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>35</item>
+          <item>trinta e cinco</item>
+          <item>trigésimo quinto</item>
+        </one-of>
+        <tag>out="35"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>36</item>
+          <item>trinta e seis</item>
+          <item>trigésimo sexto</item>
+        </one-of>
+        <tag>out="36"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>37</item>
+          <item>trinta e sete</item>
+          <item>trigésimo sétimo</item>
+        </one-of>
+        <tag>out="37"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>38</item>
+          <item>trinta e oito</item>
+          <item>trigésimo oitavo</item>
+        </one-of>
+        <tag>out="38"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>39</item>
+          <item>trinta e nove</item>
+          <item>trigésimo nono</item>
+        </one-of>
+        <tag>out="39"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>40</item>
+          <item>quarenta</item>
+          <item>quadragésimo  </item>
+        </one-of>
+        <tag>out="40"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>41</item>
+          <item>quarenta e um</item>
+          <item>quadragésimo primeiro</item>
+        </one-of>
+        <tag>out="41"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>42</item>
+          <item>quarenta e dois</item>
+          <item>quadragésimo segundo</item>
+        </one-of>
+        <tag>out="42"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>43</item>
+          <item>quarenta e três</item>
+          <item>quadragésimo terceiro</item>
+        </one-of>
+        <tag>out="43"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>44</item>
+          <item>quarenta e quatro</item>
+          <item>quadragésimo quarto</item>
+        </one-of>
+        <tag>out="44"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>45</item>
+          <item>quarenta e cinco</item>
+          <item>quadragésimo quinto</item>
+        </one-of>
+        <tag>out="45"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>46</item>
+          <item>quarenta e seis</item>
+          <item>quadragésimo sexto</item>
+        </one-of>
+        <tag>out="46"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>47</item>
+          <item>quarenta e sete</item>
+          <item>quadragésimo sétimo</item>
+        </one-of>
+        <tag>out="47"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>48</item>
+          <item>quarenta e oito</item>
+          <item>quadragésimo oitavo</item>
+        </one-of>
+        <tag>out="48"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>49</item>
+          <item>quarenta e nove</item>
+          <item>quadragésimo nono</item>
+        </one-of>
+        <tag>out="49"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>50</item>
+          <item>cinquenta</item>
+          <item>quinquagésimo  </item>
+        </one-of>
+        <tag>out="50"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>51</item>
+          <item>cinquenta e um</item>
+          <item>quinquagésimo primeiro</item>
+        </one-of>
+        <tag>out="51"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>52</item>
+          <item>cinquenta e dois</item>
+          <item>quinquagésimo segundo</item>
+        </one-of>
+        <tag>out="52"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>53</item>
+          <item>cinquenta e três</item>
+          <item>quinquagésimo terceiro</item>
+        </one-of>
+        <tag>out="53"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>54</item>
+          <item>cinquenta e quatro</item>
+          <item>quinquagésimo quarto</item>
+        </one-of>
+        <tag>out="54"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>55</item>
+          <item>cinquenta e cinco</item>
+          <item>quinquagésimo quinto</item>
+        </one-of>
+        <tag>out="55"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>56</item>
+          <item>cinquenta e seis</item>
+          <item>quinquagésimo sexto</item>
+        </one-of>
+        <tag>out="56"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>57</item>
+          <item>cinquenta e sete</item>
+          <item>quinquagésimo sétimo</item>
+        </one-of>
+        <tag>out="57"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>58</item>
+          <item>cinquenta e oito</item>
+          <item>quinquagésimo oitavo</item>
+        </one-of>
+        <tag>out="58"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>59</item>
+          <item>cinquenta e nove</item>
+          <item>quinquagésimo nono</item>
+        </one-of>
+        <tag>out="59"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>60</item>
+          <item>sessenta</item>
+          <item>sexagésimo  </item>
+        </one-of>
+        <tag>out="60"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>61</item>
+          <item>sessenta e um</item>
+          <item>sexagésimo primeiro</item>
+        </one-of>
+        <tag>out="61"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>62</item>
+          <item>sessenta e dois</item>
+          <item>sexagésimo segundo</item>
+        </one-of>
+        <tag>out="62"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>63</item>
+          <item>sessenta e três</item>
+          <item>sexagésimo terceiro</item>
+        </one-of>
+        <tag>out="63"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>64</item>
+          <item>sessenta e quatro</item>
+          <item>sexagésimo quarto</item>
+        </one-of>
+        <tag>out="64"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>65</item>
+          <item>sessenta e cinco</item>
+          <item>sexagésimo quinto</item>
+        </one-of>
+        <tag>out="65"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>66</item>
+          <item>sessenta e seis</item>
+          <item>sexagésimo sexto</item>
+        </one-of>
+        <tag>out="66"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>67</item>
+          <item>sessenta e sete</item>
+          <item>sexagésimo sétimo</item>
+        </one-of>
+        <tag>out="67"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>68</item>
+          <item>sessenta e oito</item>
+          <item>sexagésimo oitavo</item>
+        </one-of>
+        <tag>out="68"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>69</item>
+          <item>sessenta e nove</item>
+          <item>sexagésimo nono</item>
+        </one-of>
+        <tag>out="69"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>70</item>
+          <item>setenta</item>
+          <item>septuagésimo  </item>
+        </one-of>
+        <tag>out="70"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>71</item>
+          <item>setenta e um</item>
+          <item>septuagésimo primeiro</item>
+        </one-of>
+        <tag>out="71"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>72</item>
+          <item>setenta e dois</item>
+          <item>septuagésimo segundo</item>
+        </one-of>
+        <tag>out="72"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>73</item>
+          <item>setenta e três</item>
+          <item>septuagésimo terceiro</item>
+        </one-of>
+        <tag>out="73"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>74</item>
+          <item>setenta e quatro</item>
+          <item>septuagésimo quarto</item>
+        </one-of>
+        <tag>out="74"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>75</item>
+          <item>setenta e cinco</item>
+          <item>septuagésimo quinto</item>
+        </one-of>
+        <tag>out="75"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>76</item>
+          <item>setenta e seis</item>
+          <item>septuagésimo sexto</item>
+        </one-of>
+        <tag>out="76"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>77</item>
+          <item>setenta e sete</item>
+          <item>septuagésimo sétimo</item>
+        </one-of>
+        <tag>out="77"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>78</item>
+          <item>setenta e oito</item>
+          <item>septuagésimo oitavo</item>
+        </one-of>
+        <tag>out="78"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>79</item>
+          <item>setenta e nove</item>
+          <item>septuagésimo nono</item>
+        </one-of>
+        <tag>out="79"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>80</item>
+          <item>oitenta</item>
+          <item>octogésimo  </item>
+        </one-of>
+        <tag>out="80"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>81</item>
+          <item>oitenta e um</item>
+          <item>octogésimo primeiro</item>
+        </one-of>
+        <tag>out="81"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>82</item>
+          <item>oitenta e dois</item>
+          <item>octogésimo segundo</item>
+        </one-of>
+        <tag>out="82"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>83</item>
+          <item>oitenta e três</item>
+          <item>octogésimo terceiro</item>
+        </one-of>
+        <tag>out="83"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>84</item>
+          <item>oitenta e quatro</item>
+          <item>octogésimo quarto</item>
+        </one-of>
+        <tag>out="84"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>85</item>
+          <item>oitenta e cinco</item>
+          <item>octogésimo quinto</item>
+        </one-of>
+        <tag>out="85"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>86</item>
+          <item>oitenta e seis</item>
+          <item>octogésimo sexto</item>
+        </one-of>
+        <tag>out="86"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>87</item>
+          <item>oitenta e sete</item>
+          <item>octogésimo sétimo</item>
+        </one-of>
+        <tag>out="87"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>88</item>
+          <item>oitenta e oito</item>
+          <item>octogésimo oitavo</item>
+        </one-of>
+        <tag>out="88"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>89</item>
+          <item>oitenta e nove</item>
+          <item>octogésimo nono</item>
+        </one-of>
+        <tag>out="89"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>90</item>
+          <item>noventa</item>
+          <item>nonagésimo  </item>
+        </one-of>
+        <tag>out="90"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>91</item>
+          <item>noventa e um</item>
+          <item>nonagésimo primeiro</item>
+        </one-of>
+        <tag>out="91"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>92</item>
+          <item>noventa e dois</item>
+          <item>nonagésimo segundo</item>
+        </one-of>
+        <tag>out="92"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>93</item>
+          <item>noventa e três</item>
+          <item>nonagésimo terceiro</item>
+        </one-of>
+        <tag>out="93"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>94</item>
+          <item>noventa e quatro</item>
+          <item>nonagésimo quarto</item>
+        </one-of>
+        <tag>out="94"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>95</item>
+          <item>noventa e cinco</item>
+          <item>nonagésimo quinto</item>
+        </one-of>
+        <tag>out="95"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>96</item>
+          <item>noventa e seis</item>
+          <item>nonagésimo sexto</item>
+        </one-of>
+        <tag>out="96"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>97</item>
+          <item>noventa e sete</item>
+          <item>nonagésimo sétimo</item>
+        </one-of>
+        <tag>out="97"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>98</item>
+          <item>noventa e oito</item>
+          <item>nonagésimo oitavo</item>
+        </one-of>
+        <tag>out="98"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>99</item>
+          <item>noventa e nove</item>
+          <item>nonagésimo nono</item>
+        </one-of>
+        <tag>out="99"</tag>
+      </item>
+
+      <item>
+        <one-of>
+          <item>100</item>
+          <item>cem</item>
+          <item>centésimo</item>
+        </one-of>
+        <tag>out="100"</tag>
+      </item>
     </one-of>
   </rule>
+
 </grammar>

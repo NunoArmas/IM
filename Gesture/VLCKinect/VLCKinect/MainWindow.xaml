@@ -1,0 +1,33 @@
+﻿<Window x:Class="VLCKinect.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VLCKinect"
+        mc:Ignorable="d"
+        Closing="OnWindowClosing"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="36*" />
+            <RowDefinition Height="34*" />
+            <RowDefinition Height="35*" />
+        </Grid.RowDefinitions>
+
+
+        <Image Grid.Column="0" Grid.Row="0" Source="Images/backward.jpg"/>
+        <Image Grid.Column="1" Grid.Row="0" Source="Images/forward.jpg"/>
+        <Image Grid.Column="2" Grid.Row="0" Source="Images/fullscreenOFF.jpg"/>
+        <Image Grid.Column="0" Grid.Row="1" Source="Images/fullscreenON.jpg"/>
+        <Image Grid.Column="1" Grid.Row="1" Source="Images/pause.jpg"/>
+        <Image Grid.Column="2" Grid.Row="1" Source="Images/play.jpg"/>
+        <Image Grid.Column="0" Grid.Row="2" Source="Images/stop.jpg"/>
+        <Image Grid.Column="1" Grid.Row="2" Source="Images/volumeDOWN.jpg"/>
+        <Image Grid.Column="2" Grid.Row="2" Source="Images/volumeUP.jpg"/>
+    </Grid>
+</Window>
