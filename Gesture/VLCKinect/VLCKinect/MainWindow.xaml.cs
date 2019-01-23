@@ -362,23 +362,6 @@ namespace VLCKinect
             timer.Stop();
         }
 
-        private void OnConnectEvent(object sender, ElapsedEventArgs e)
-        {
-            try
-            {
-
-                if (!checkSocket())
-                {
-                    connectSocket();
-                }
-            }
-            catch
-            {
-                Console.WriteLine("Failed to connect");
-            }
-            connectSock.Start();
-        }
-
         private string makeMSG(string[] tags)
         {
             string json = "{ \"recognized\": [";
